@@ -35,13 +35,15 @@ PackageURL=http://somewhere.net/weka/funkyPackage.zip?download
 URL=http://somewhere.net/funkyResearchInfo.html
 
 # Enhances various other packages ?
-Enhances=packageName1,packageName2,...
+#Enhances=packageName1,packageName2,...
+Enhances=
 
 # Related to other packages?
-Related=packageName1,packageName2,...
+#Related=packageName1,packageName2,...
+Related=
 
 # Dependencies (format: packageName (equality/inequality version_number)
-Depends=weka (>=3.7.13),packageName1 (=x.y.z), packageName2 (>u.v.w|<=x.y.z),...
+Depends=weka (>=3.7.13),SMOTE (>=1.0.3)
 
 # Message to display in installation. Can be used to provide
 # special instructions (e.g. manual stuff needed to complete
