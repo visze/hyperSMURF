@@ -1,11 +1,19 @@
 package nz.ac.waikato.cms.weka.classifiers.meta;
 
+import java.util.Collections;
+import java.util.Enumeration;
 import java.util.Random;
+import java.util.Vector;
 
 import weka.classifiers.RandomizableParallelIteratedSingleClassifierEnhancer;
 import weka.core.Instance;
 import weka.core.Instances;
+import weka.core.Option;
 import weka.core.Randomizable;
+import weka.core.TechnicalInformation;
+import weka.core.TechnicalInformation.Field;
+import weka.core.TechnicalInformation.Type;
+import weka.core.TechnicalInformationHandler;
 import weka.core.Utils;
 import weka.filters.Filter;
 import weka.filters.unsupervised.instance.RemoveWithValues;
@@ -28,7 +36,7 @@ import weka.filters.unsupervised.instance.RemoveWithValues;
  * <pre>
  * &#64;article{Liu09,
  *    Author = {Liu, X. and Wu, J. and Zhou, Z.},
- *    Journal = {Systems, Man, and Cybernetics, Part B: Cybernetics, IEEE Transactions on},
+ *    Journal = {IEEE Transactions on Systems, Man, and Cybernetics, Part B: Cybernetics},
  *    Month = {April},
  *    Number = {2},
  *    Pages = {539-550},
@@ -44,7 +52,7 @@ import weka.filters.unsupervised.instance.RemoveWithValues;
  * <p/>
  * 
  * <pre>
- *  -P &lt;num&gt;
+ *  -I &lt;num&gt;
  *  Number of partitions of the majority class. 
  *  (default 10)
  * </pre>
@@ -87,7 +95,8 @@ import weka.filters.unsupervised.instance.RemoveWithValues;
  * 
  *
  */
-public class EasyEnsemble extends RandomizableParallelIteratedSingleClassifierEnhancer {
+public class EasyEnsemble extends RandomizableParallelIteratedSingleClassifierEnhancer
+		implements TechnicalInformationHandler {
 
 	protected Instances m_majorityData;
 	protected Instances m_minorityData;
@@ -102,6 +111,134 @@ public class EasyEnsemble extends RandomizableParallelIteratedSingleClassifierEn
 	 */
 	public EasyEnsemble() {
 		super();
+	}
+
+	/**
+	 * Returns a string describing classifier
+	 * 
+	 * @return a description suitable for displaying in the explorer/experimenter gui
+	 */
+	public String globalInfo() {
+
+		return "Class for EasyEnsemble, a classifier for imbalanced datasets. Can do classification "
+				+ "and regression depending on the base learner. \n\n" + "For more information, see\n\n"
+				+ getTechnicalInformation().toString();
+	}
+
+	/**
+	 * Returns an instance of a TechnicalInformation object, containing detailed information about the technical
+	 * background of this class, e.g., paper reference or book this class is based on.
+	 * 
+	 * @return the technical information about this class
+	 */
+	public TechnicalInformation getTechnicalInformation() {
+		TechnicalInformation result;
+
+		result = new TechnicalInformation(Type.ARTICLE);
+		result.setValue(Field.AUTHOR, "Xu-Ying Liu");
+		result.setValue(Field.YEAR, "2009");
+		result.setValue(Field.TITLE, "Exploratory Undersampling for Class-Imbalance Learning");
+		result.setValue(Field.JOURNAL, "IEEE Transactions on Systems, Man, and Cybernetics, Part B: Cybernetics");
+		result.setValue(Field.VOLUME, "39");
+		result.setValue(Field.NUMBER, "2");
+		result.setValue(Field.PAGES, "539-550");
+
+		return result;
+	}
+
+	@Override
+	public Enumeration<Option> listOptions() {
+
+		Vector<Option> newVector = new Vector<Option>(3);
+
+		newVector.addElement(
+				new Option("\t Number of partitions of the majority class. \n \t (default 10)", "P", 1, "-P"));
+
+		newVector.addAll(Collections.list(super.listOptions()));
+
+		return newVector.elements();
+	}
+
+	/**
+	 * Parses a given list of options.
+	 * <p/>
+	 *
+	 * <!-- options-start --> Valid options are:
+	 * <p/>
+	 * 
+	 * <pre>
+	 *  -I &lt;num&gt;
+	 *  Number of partitions of the majority class. 
+	 *  (default 10)
+	 * </pre>
+	 * 
+	 * 
+	 * <pre>
+	 *  -S &lt;num&gt;
+	 *  Random number seed.
+	 *  (default 1)
+	 * </pre>
+	 * 
+	 * <pre>
+	 *  -num-slots &lt;num&gt;
+	 *  Number of execution slots.
+	 *  (default 1 - i.e. no parallelism)
+	 * </pre>
+	 * 
+	 * 
+	 * <pre>
+	 *  -D
+	 *  If set, classifier is run in debug mode and
+	 *  may output additional info to the console
+	 * </pre>
+	 * 
+	 * <pre>
+	 *  -W
+	 *  Full name of base classifier.
+	 *  (default: weka.classifiers.rules.ZeroR)
+	 * </pre>
+	 * 
+	 * <pre>
+	 * 
+	 * <!-- options-end -->
+	 *
+	 * Options after -- are passed to the designated classifier.
+	 * <p>
+	 *
+	 * @param options
+	 *            the list of options as an array of strings
+	 * @throws Exception
+	 *             if an option is not supported
+	 */
+	@Override
+	public void setOptions(String[] options) throws Exception {
+
+		super.setOptions(options);
+
+		Utils.checkForRemainingOptions(options);
+	}
+
+	/**
+	 * Gets the current settings of the Classifier.
+	 *
+	 * @return an array of strings suitable for passing to setOptions
+	 */
+	@Override
+	public String[] getOptions() {
+
+		Vector<String> options = new Vector<String>();
+
+		options.add("-P");
+		options.add("" + getNumIterations());
+
+		Collections.addAll(options, super.getOptions());
+
+		return options.toArray(new String[0]);
+	}
+
+	@Override
+	public String numIterationsTipText() {
+		return "The number of partitions to be used.";
 	}
 
 	/**
@@ -193,6 +330,20 @@ public class EasyEnsemble extends RandomizableParallelIteratedSingleClassifierEn
 			Utils.normalize(sums);
 			return sums;
 		}
+	}
+
+	@Override
+	public String toString() {
+
+		if (m_Classifiers == null)
+			return "EasyEnsemble: No model built yet.";
+
+		StringBuffer text = new StringBuffer();
+		text.append("All the base classifiers: \n\n");
+		for (int i = 0; i < m_Classifiers.length; i++)
+			text.append(m_Classifiers[i].toString() + "\n\n");
+
+		return text.toString();
 	}
 
 	private int getMinorityClass(Instances data) {
