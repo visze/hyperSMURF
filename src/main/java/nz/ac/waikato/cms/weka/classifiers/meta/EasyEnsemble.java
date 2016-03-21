@@ -257,12 +257,24 @@ public class EasyEnsemble extends RandomizableParallelIteratedSingleClassifierEn
 		// remove instances with missing class
 		m_data = new Instances(data);
 		m_data.deleteWithMissingClass();
+		
+		m_random = new Random(m_Seed);
+		
+		this.buildEasyEnsembleClassifier();
 
+	}
+	
+	/**
+	 * outsource easy-ensemble specific buildClassifier methods for better extension of this method
+	 * 
+	 * @throws Exception
+	 */
+	protected void  buildEasyEnsembleClassifier() throws Exception {
 		super.buildClassifier(m_data);
 
 		RemoveWithValues classValueFilter = new RemoveWithValues();
-		classValueFilter.setAttributeIndex(Integer.toString(data.classIndex() + 1));
-		classValueFilter.setNominalIndicesArr(new int[] { getMinorityClass(data) + 1 });
+		classValueFilter.setAttributeIndex(Integer.toString(m_data.classIndex() + 1));
+		classValueFilter.setNominalIndicesArr(new int[] { getMinorityClass(m_data) + 1 });
 		classValueFilter.setInputFormat(m_data);
 
 		m_minorityData = Filter.useFilter(m_data, classValueFilter);
@@ -273,8 +285,6 @@ public class EasyEnsemble extends RandomizableParallelIteratedSingleClassifierEn
 
 		// save memory
 		m_data = null;
-
-		m_random = new Random(m_Seed);
 
 		for (int j = 0; j < m_Classifiers.length; j++) {
 			if (m_Classifier instanceof Randomizable) {
@@ -287,8 +297,8 @@ public class EasyEnsemble extends RandomizableParallelIteratedSingleClassifierEn
 		// save memory
 		m_majorityData = null;
 		m_minorityData = null;
-
 	}
+	
 
 	/**
 	 * Calculates the class membership probabilities for the given test instance.
