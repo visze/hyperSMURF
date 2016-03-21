@@ -8,7 +8,6 @@ import weka.classifiers.meta.Bagging;
 import weka.classifiers.meta.RandomizableFilteredClassifier;
 import weka.classifiers.trees.RandomForest;
 import weka.core.Instances;
-import weka.core.Randomizable;
 import weka.core.TechnicalInformation;
 import weka.core.TechnicalInformation.Field;
 import weka.core.TechnicalInformation.Type;
@@ -16,7 +15,6 @@ import weka.filters.Filter;
 import weka.filters.MultiFilter;
 import weka.filters.supervised.instance.SMOTE;
 import weka.filters.supervised.instance.SpreadSubsample;
-import weka.filters.unsupervised.instance.RemoveWithValues;
 
 /**
  * <!-- globalinfo-start -->
