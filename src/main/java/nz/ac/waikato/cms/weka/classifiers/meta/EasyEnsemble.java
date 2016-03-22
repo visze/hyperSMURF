@@ -149,10 +149,7 @@ public class EasyEnsemble extends RandomizableParallelIteratedSingleClassifierEn
 	@Override
 	public Enumeration<Option> listOptions() {
 
-		Vector<Option> newVector = new Vector<Option>(3);
-
-		newVector.addElement(
-				new Option("\t Number of partitions of the majority class. \n \t (default 10)", "P", 1, "-P"));
+		Vector<Option> newVector = new Vector<Option>(0);
 
 		newVector.addAll(Collections.list(super.listOptions()));
 
@@ -260,7 +257,11 @@ public class EasyEnsemble extends RandomizableParallelIteratedSingleClassifierEn
 		
 		m_random = new Random(m_Seed);
 		
+		super.buildClassifier(m_data);
+		
 		this.buildEasyEnsembleClassifier();
+		
+		
 
 	}
 	
@@ -270,7 +271,7 @@ public class EasyEnsemble extends RandomizableParallelIteratedSingleClassifierEn
 	 * @throws Exception
 	 */
 	protected void  buildEasyEnsembleClassifier() throws Exception {
-		super.buildClassifier(m_data);
+		
 
 		RemoveWithValues classValueFilter = new RemoveWithValues();
 		classValueFilter.setAttributeIndex(Integer.toString(m_data.classIndex() + 1));
