@@ -11,7 +11,6 @@ import weka.classifiers.meta.Bagging;
 import weka.classifiers.meta.EasyEnsemble;
 import weka.classifiers.meta.FilteredClassifier;
 import weka.classifiers.meta.RandomizableFilteredClassifier;
-import weka.classifiers.trees.RandomForest;
 import weka.core.Instances;
 import weka.core.Option;
 import weka.core.TechnicalInformation;
@@ -209,10 +208,20 @@ public class HyperSMURF extends EasyEnsemble {
 	 * 
 	 * @return a description suitable for displaying in the explorer/experimenter gui
 	 */
+	@Override
 	public String globalInfo() {
 
 		return "Class for constructing a hyperSMURF.\n\n" + "For more information see: \n\n"
 				+ getTechnicalInformation().toString();
+	}
+
+	/**
+	 * String describing default classifier.
+	 */
+	@Override
+	protected String defaultClassifierString() {
+
+		return "weka.classifiers.trees.RandomForest";
 	}
 
 	@Override
