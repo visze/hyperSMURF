@@ -1,14 +1,14 @@
-package nz.ac.waikato.cms.weka.classifiers.trees;
+package weka.classifiers.trees;
 
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Random;
 import java.util.Vector;
 
-import nz.ac.waikato.cms.weka.classifiers.meta.EasyEnsemble;
 import weka.classifiers.Classifier;
 import weka.classifiers.RandomizableClassifier;
 import weka.classifiers.meta.Bagging;
+import weka.classifiers.meta.EasyEnsemble;
 import weka.classifiers.meta.FilteredClassifier;
 import weka.classifiers.meta.RandomizableFilteredClassifier;
 import weka.classifiers.trees.RandomForest;

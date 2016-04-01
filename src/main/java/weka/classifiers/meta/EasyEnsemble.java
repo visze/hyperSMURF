@@ -1,4 +1,4 @@
-package nz.ac.waikato.cms.weka.classifiers.meta;
+package weka.classifiers.meta;
 
 import java.util.Collections;
 import java.util.Enumeration;
