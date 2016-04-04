@@ -1,17 +1,18 @@
 package weka.classifiers.meta;
 
+import static org.junit.Assert.assertThat;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.util.Random;
 
-import org.junit.BeforeClass;
+import org.hamcrest.Matchers;
+import org.junit.Before;
 import org.junit.Test;
 
 import com.google.common.io.Resources;
 
-import weka.classifiers.AbstractClassifier;
-import weka.classifiers.Classifier;
 import weka.classifiers.Evaluation;
 import weka.classifiers.trees.J48;
 import weka.core.Instances;
@@ -24,9 +25,9 @@ public class EasyEnsembleTest {
 	private static int seed = 42;
 	private int folds = 10;
 
-	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
-		File file = new File(Resources.getResource(diabetesFile).toString());
+	@Before
+	public void setUp() throws Exception {
+		File file = new File(Resources.getResource(diabetesFile).getPath());
 		BufferedReader reader = new BufferedReader(new FileReader(file));
 		data = new Instances(reader);
 		reader.close();
@@ -41,13 +42,22 @@ public class EasyEnsembleTest {
 	public void classifyJ48Test() throws Exception {
 
 		EasyEnsemble easyEnsemble = new EasyEnsemble();
+		easyEnsemble.setNumIterations(3);
 		easyEnsemble.setClassifier(new J48());
 
-			
-			Evaluation eval = new Evaluation(randData);
-			eval.crossValidateModel(easyEnsemble, randData, folds, new Random(seed));
+		Evaluation eval = new Evaluation(randData);
+		eval.crossValidateModel(easyEnsemble, randData, folds, new Random(seed));
 
+		double prcEasyEnsemble = eval.areaUnderPRC(1);
+		double rocEasyEnsemble = eval.areaUnderROC(1);
 
+		eval = new Evaluation(randData);
+		eval.crossValidateModel(new J48(), randData, folds, new Random(seed));
+		double prcJ48 = eval.areaUnderPRC(1);
+		double rocJ48 = eval.areaUnderROC(1);
+
+		assertThat(prcEasyEnsemble, Matchers.greaterThan(prcJ48));
+		assertThat(rocEasyEnsemble, Matchers.greaterThan(rocJ48));
 	}
 
 }
