@@ -1,4 +1,4 @@
-package nz.ac.waikato.cms.weka.classifiers.meta;
+package weka.classifiers.meta;
 
 import java.util.Collections;
 import java.util.Enumeration;
@@ -237,6 +237,23 @@ public class EasyEnsemble extends RandomizableParallelIteratedSingleClassifierEn
 	public String numIterationsTipText() {
 		return "The number of partitions to be used.";
 	}
+	
+	/**
+	 * Returns a training set for a particular partition.
+	 * 
+	 * @param partition
+	 *            the number of the partition for the requested training set.
+	 * @return the training set for the supplied iteration number
+	 * @throws Exception
+	 *             if something goes wrong when generating a training set.
+	 */
+
+	@Override
+	protected synchronized Instances getTrainingSet(int partition) throws Exception {
+		Instances trainingSet = m_majorityData.testCV(getNumIterations(), partition);
+		trainingSet.addAll(m_minorityData);
+		return trainingSet;
+	}
 
 	/**
 	 * EasyEnsemble method.
@@ -275,14 +292,14 @@ public class EasyEnsemble extends RandomizableParallelIteratedSingleClassifierEn
 
 		RemoveWithValues classValueFilter = new RemoveWithValues();
 		classValueFilter.setAttributeIndex(Integer.toString(m_data.classIndex() + 1));
-		classValueFilter.setNominalIndicesArr(new int[] { getMinorityClass(m_data) + 1 });
+		classValueFilter.setNominalIndicesArr(new int[] { getMinorityClass(m_data)});
 		classValueFilter.setInputFormat(m_data);
 
-		m_minorityData = Filter.useFilter(m_data, classValueFilter);
+		m_majorityData = Filter.useFilter(m_data, classValueFilter);
 
 		classValueFilter.setInvertSelection(true);
 		classValueFilter.setInputFormat(m_data);
-		m_majorityData = Filter.useFilter(m_data, classValueFilter);
+		m_minorityData = Filter.useFilter(m_data, classValueFilter);
 
 		// save memory
 		m_data = null;
@@ -371,21 +388,5 @@ public class EasyEnsemble extends RandomizableParallelIteratedSingleClassifierEn
 		return minIndex;
 	}
 
-	/**
-	 * Returns a training set for a particular partition.
-	 * 
-	 * @param partition
-	 *            the number of the partition for the requested training set.
-	 * @return the training set for the supplied iteration number
-	 * @throws Exception
-	 *             if something goes wrong when generating a training set.
-	 */
-
-	@Override
-	protected synchronized Instances getTrainingSet(int partition) throws Exception {
-		Instances trainingSet = m_majorityData.testCV(getNumIterations(), partition);
-		trainingSet.addAll(m_minorityData);
-		return trainingSet;
-	}
 
 }
