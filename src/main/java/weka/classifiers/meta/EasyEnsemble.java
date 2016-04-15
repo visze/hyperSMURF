@@ -225,9 +225,6 @@ public class EasyEnsemble extends RandomizableParallelIteratedSingleClassifierEn
 
 		Vector<String> options = new Vector<String>();
 
-		options.add("-P");
-		options.add("" + getNumIterations());
-
 		Collections.addAll(options, super.getOptions());
 
 		return options.toArray(new String[0]);
