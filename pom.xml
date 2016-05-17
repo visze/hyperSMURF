@@ -4,7 +4,7 @@
 	<groupId>de.charite.compbio</groupId>
 	<artifactId>hyperSMURF</artifactId>
 	<packaging>jar</packaging>
-	<version>0.1</version>
+	<version>0.2-SNAPSHOT</version>
 	<name>hyperSMURF</name>
 	<url>http://maven.apache.org</url>
 	<properties>
@@ -20,7 +20,7 @@
 		<dependency>
 			<groupId>nz.ac.waikato.cms.weka</groupId>
 			<artifactId>weka-dev</artifactId>
-			<version>3.7.13</version>
+			<version>3.9.0</version>
 		</dependency>
 		<dependency>
 			<groupId>nz.ac.waikato.cms.weka</groupId>

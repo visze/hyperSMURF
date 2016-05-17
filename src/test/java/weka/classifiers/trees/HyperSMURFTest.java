@@ -121,7 +121,7 @@ public class HyperSMURFTest {
 		eval = new Evaluation(randGeneratedImbalancedData);
 		RandomForest rf = new RandomForest();
 		rf.setNumExecutionSlots(10);
-		rf.setNumTrees(10);
+		rf.setNumIterations(10);
 		eval.crossValidateModel(rf, randGeneratedImbalancedData, folds, new Random(seed));
 		double prcRF = eval.areaUnderPRC(1);
 		double rocRF = eval.areaUnderROC(1);

@@ -7,7 +7,6 @@ import java.util.Vector;
 
 import weka.classifiers.Classifier;
 import weka.classifiers.RandomizableClassifier;
-import weka.classifiers.meta.Bagging;
 import weka.classifiers.meta.EasyEnsemble;
 import weka.classifiers.meta.FilteredClassifier;
 import weka.classifiers.meta.RandomizableFilteredClassifier;
@@ -158,8 +157,6 @@ public class HyperSMURF extends EasyEnsemble {
 	/** Final number of features that were considered in last build. */
 	protected int m_KValue = 0;
 
-	/** The bagger. */
-	protected Bagging m_bagger = null;
 
 	/** The maximum depth of the trees (0 = unlimited) */
 	protected int m_MaxDepth = 0;
@@ -170,8 +167,6 @@ public class HyperSMURF extends EasyEnsemble {
 	/** Print the individual trees in the output */
 	protected boolean m_printTrees = false;
 
-	/** Don't calculate the out of bag error */
-	protected boolean m_dontCalculateOutOfBagError;
 
 	/** Whether to break ties randomly. */
 	protected boolean m_BreakTiesRandomly = false;
@@ -468,38 +463,6 @@ public class HyperSMURF extends EasyEnsemble {
 		return "If true, then the out of bag error is not computed";
 	}
 
-	/**
-	 * Set whether to turn off the calculation of out of bag error
-	 * 
-	 * @param b
-	 *            true to turn off the calculation of out of bag error
-	 */
-	public void setDontCalculateOutOfBagError(boolean b) {
-		m_dontCalculateOutOfBagError = b;
-	}
-
-	/**
-	 * Get whether to turn off the calculation of out of bag error
-	 * 
-	 * @return true to turn off the calculation of out of bag error
-	 */
-	public boolean getDontCalculateOutOfBagError() {
-		return m_dontCalculateOutOfBagError;
-	}
-
-	/**
-	 * Gets the out of bag error that was calculated as the classifier was built.
-	 * 
-	 * @return the out of bag error
-	 */
-	public double measureOutOfBagError() {
-
-		if (m_bagger != null && !m_dontCalculateOutOfBagError) {
-			return m_bagger.measureOutOfBagError();
-		} else {
-			return Double.NaN;
-		}
-	}
 
 	/**
 	 * Set the number of execution slots (threads) to use for building the members of the ensemble.
@@ -838,13 +801,13 @@ public class HyperSMURF extends EasyEnsemble {
 		RandomForest randomForest = new RandomForest();
 		randomForest.setBatchSize(m_BatchSize);
 		randomForest.setBreakTiesRandomly(m_BreakTiesRandomly);
-		randomForest.setDontCalculateOutOfBagError(m_dontCalculateOutOfBagError);
+		randomForest.setCalcOutOfBag(false);
 		randomForest.setMaxDepth(m_MaxDepth);
 		randomForest.setNumDecimalPlaces(m_numDecimalPlaces);
 		randomForest.setNumExecutionSlots(m_numRFExecutionSlots);
 		randomForest.setNumFeatures(m_numFeatures);
-		randomForest.setNumTrees(m_numTrees);
-		randomForest.setPrintTrees(m_printTrees);
+		randomForest.setNumIterations(m_numTrees);
+		randomForest.setPrintClassifiers(m_printTrees);
 		randomForest.setSeed(m_random.nextInt());
 		randomForest.setDoNotCheckCapabilities(m_DoNotCheckCapabilities);
 		randomForest.setDebug(m_Debug);
