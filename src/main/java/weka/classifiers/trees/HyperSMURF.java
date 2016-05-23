@@ -133,7 +133,7 @@ import weka.filters.supervised.instance.SpreadSubsample;
  * <p>
  *
  * @author <a href="mailto:max.schubach@charite.de">Max Schubach</a>
- * @version 0.1
+ * @version 0.2
  * 
  *
  */

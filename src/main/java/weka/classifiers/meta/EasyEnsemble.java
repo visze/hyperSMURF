@@ -91,7 +91,7 @@ import weka.filters.unsupervised.instance.RemoveWithValues;
  * <p>
  *
  * @author <a href="mailto:max.schubach@charite.de">Max Schubach</a>
- * @version 0.1
+ * @version 0.2
  * 
  *
  */
@@ -302,7 +302,7 @@ public class EasyEnsemble extends RandomizableParallelIteratedSingleClassifierEn
 		m_data = null;
 
 		for (int j = 0; j < m_Classifiers.length; j++) {
-			if (m_Classifier instanceof Randomizable) {
+			if (m_Classifiers[j] instanceof Randomizable) {
 				((Randomizable) m_Classifiers[j]).setSeed(m_random.nextInt());
 			}
 		}
