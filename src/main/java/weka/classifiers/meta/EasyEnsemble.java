@@ -101,7 +101,7 @@ public class EasyEnsemble extends RandomizableParallelIteratedSingleClassifierEn
 	protected Instances m_majorityData;
 	protected Instances m_minorityData;
 	protected Instances m_data;
-	protected Random m_random;
+	protected Random m_random = new Random();
 
 	/** for serialization */
 	private static final long serialVersionUID = 3340927280517126814L;
@@ -269,14 +269,15 @@ public class EasyEnsemble extends RandomizableParallelIteratedSingleClassifierEn
 		m_data = new Instances(data);
 		m_data.deleteWithMissingClass();
 		
-		m_random = new Random(m_Seed);
-		
 		super.buildClassifier(m_data);
 		
 		this.buildEasyEnsembleClassifier();
-		
-		
-
+	}
+	
+	@Override
+	public void setSeed(int seed) {
+		super.setSeed(seed);
+		m_random = new Random(m_Seed);
 	}
 	
 	/**
