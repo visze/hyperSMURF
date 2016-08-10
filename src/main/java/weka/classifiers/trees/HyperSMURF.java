@@ -30,7 +30,7 @@ import weka.filters.supervised.instance.SpreadSubsample;
  * <br/>
  * For more information, see<br/>
  * <br/>
- * Schubach M, Robinson PN, Valentini G. Unpublished.
+ * Schubach M, Re M, Robinson PN, Valentini G. Unpublished.
  * <p/>
  * <!-- globalinfo-end -->
  *
