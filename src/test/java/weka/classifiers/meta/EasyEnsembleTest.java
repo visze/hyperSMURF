@@ -4,8 +4,10 @@ import static org.junit.Assert.assertThat;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.util.Random;
+import java.util.zip.GZIPInputStream;
 
 import org.hamcrest.Matchers;
 import org.junit.Before;
@@ -21,14 +23,15 @@ public class EasyEnsembleTest {
 
 	private static Instances data;
 	private static Instances randData;
-	private static String diabetesFile = "diabetes.arff";
+	private static String diabetesFile = "diabetes.arff.gz";
 	private static int seed = 42;
 	private int folds = 10;
 
 	@Before
 	public void setUp() throws Exception {
 		File file = new File(Resources.getResource(diabetesFile).getPath());
-		BufferedReader reader = new BufferedReader(new FileReader(file));
+		GZIPInputStream in = new GZIPInputStream(new FileInputStream(file));
+		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 		data = new Instances(reader);
 		reader.close();
 		// setting class attribute
