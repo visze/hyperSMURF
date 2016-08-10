@@ -23,31 +23,31 @@ import weka.filters.supervised.instance.SpreadSubsample;
 
 /**
  * <!-- globalinfo-start -->
- * 
+ * <p>
  * Class for Hyper SMOTE Undersampling with Random Forests (HyperSMURF) classifier. EasyEnsemble splits up the majority
  * class into n partitions and trains n RandomForest using (a downsampled) majority partition and all upsampled (SMOTE)
- * minority classes.<br/>
- * <br/>
- * For more information, see<br/>
- * <br/>
+ * minority classes.<br>
+ * <br>
+ * For more information, see<br>
+ * <br>
  * Schubach M, Re M, Robinson PN, Valentini G. Unpublished.
- * <p/>
+ * </p>
  * <!-- globalinfo-end -->
  *
  * <!-- technical-bibtex-start --> BibTeX:
  * 
  * <pre>
  * &#64;article{Schubach,
- *    Author = {Schubach, M. and Robinson, PN. and Valentini, G.},
+ *    Author = {Schubach, M. and Re, M. and Robinson, PN. and Valentini, G.},
  * }
  * </pre>
- * <p/>
+ * 
  * <!-- technical-bibtex-end -->
  *
  * <!-- options-start -->
- * 
+ * <p>
  * Valid options are:
- * <p/>
+ * </p>
  * 
  * <pre>
  *  -S &lt;num&gt;
@@ -67,8 +67,9 @@ import weka.filters.supervised.instance.SpreadSubsample;
  *  (default: weka.classifiers.trees.RandomForest)
  * </pre>
  * 
- * <p/>
+ * <p>
  * EasyEnsemble:
+ * </p>
  * 
  * <pre>
  *  -I &lt;num&gt;
@@ -83,8 +84,9 @@ import weka.filters.supervised.instance.SpreadSubsample;
  *  (default 1 - i.e. no parallelism)
  * </pre>
  * 
- * <p/>
+ * <p>
  * SMOTE:
+ * </p>
  * 
  * <pre>
  *  -P &lt;percentage&gt;
@@ -104,8 +106,9 @@ import weka.filters.supervised.instance.SpreadSubsample;
  *  (default 0: auto-detect non-empty minority class))
  * </pre>
  * 
- * <p/>
+ * <p>
  * SpreadSubsample
+ * </p>
  * 
  * <pre>
  * -M &lt;num&gt;
@@ -129,8 +132,9 @@ import weka.filters.supervised.instance.SpreadSubsample;
  * 
  * <!-- options-end -->
  *
- * Options after -- are passed to the designated classifier.
  * <p>
+ * Options after -- are passed to the designated classifier.
+ * </p>
  *
  * @author <a href="mailto:max.schubach@charite.de">Max Schubach</a>
  * @version 0.2
