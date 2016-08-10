@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-dark.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
+
+    <title>hyperSMURF by charite</title>
+  </head>
+
+  <body>
+
+    <header>
+      <div class="container">
+        <h1>hyperSMURF</h1>
+        <h2>Weka implementation of hyperSMURF using EasyEnsemble and SMOTE</h2>
+
+        <section id="downloads">
+          <a href="https://github.com/charite/hyperSMURF/zipball/master" class="btn">Download as .zip</a>
+          <a href="https://github.com/charite/hyperSMURF/tarball/master" class="btn">Download as .tar.gz</a>
+          <a href="https://github.com/charite/hyperSMURF" class="btn btn-github"><span class="icon"></span>View on GitHub</a>
+        </section>
+      </div>
+    </header>
+
+    <div class="container">
+      <section id="main_content">
+        <p><a href="https://travis-ci.org/charite/hyperSMURF"><img src="https://travis-ci.org/charite/hyperSMURF.svg?branch=master" alt="Build Status"></a>
+<a href="http://charite.github.io/hyperSMURF/api/master/"><img src="https://img.shields.io/badge/api-master-blue.svg?style=flat" alt="API Docs"></a>
+<a href="https://www.gnu.org/licenses/gpl-3.0.txt"><img src="https://img.shields.io/badge/licence-GNU%20GPLv3-blue.svg" alt="license"></a></p>
+
+<h1>
+<a id="hypersmurf" class="anchor" href="#hypersmurf" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>hyperSMURF</h1>
+
+<p>Weka implementation of hyperSMURF using EasyEnsemble and SMOTE</p>
+
+<h2>
+<a id="requirements" class="anchor" href="#requirements" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Requirements</h2>
+
+<p>hyperSMURF requires java 8 and higher. It can be used as a <a href="http://www.cs.waikato.ac.nz/%7Eml/weka/">Weka</a> plugin using version 3.9 or higher. To build the program it is recommended to use <a href="https://maven.apache.org/">Maven</a>.</p>
+
+<h2>
+<a id="installation-from-github-sources" class="anchor" href="#installation-from-github-sources" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installation from Github sources</h2>
+
+<p>To use hyperSMURF in <a href="http://www.cs.waikato.ac.nz/%7Eml/weka/">Weka</a> three steps are needed.</p>
+
+<ol>
+<li>Clone this repository.</li>
+<li>Compile the java classes and create a Weka plugin using Maven<br>
+</li>
+<li>Load the plugin into your Weka Package Manager</li>
+</ol>
+
+<h3>
+<a id="clone-this-repository" class="anchor" href="#clone-this-repository" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Clone this repository</h3>
+
+<p>Use your terminal and go to a folder where you want to checkout hyperSMURF. Then run:</p>
+
+<pre><code>git clone https://github.com/charite/hyperSMURF.git
+</code></pre>
+
+<h3>
+<a id="compile-the-java-classes-and-create-the-weka-plugin" class="anchor" href="#compile-the-java-classes-and-create-the-weka-plugin" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Compile the java classes and create the Weka plugin</h3>
+
+<p>Go to your repository and create a jar file of hyperSMURF using Maven.</p>
+
+<pre><code>cd hyperSMURF
+
+mvn clean install package
+</code></pre>
+
+<p>Now you should have the  <code>hyperSMURF-0.2.jar</code> in the folder <code>target/</code>. The package phase of Maven creates also the Weka  file <code>hyperSMURF-0.2-weka.zip</code>. It is located in the <code>target/</code> folder.</p>
+
+<h3>
+<a id="load-the-plugin-into-your-weka-package-manager" class="anchor" href="#load-the-plugin-into-your-weka-package-manager" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Load the plugin into your Weka Package Manager</h3>
+
+<p>Open Weka, go to the package manager, and load the file <code>hyperSMURF-0.2-weka.zip</code> into it.  Look at the <a href="http://weka.wikispaces.com/How+do+I+use+the+package+manager%3F">Weka wiki</a> for more information about the Weka Package Manager.</p>
+
+<h2>
+<a id="installation-using-maven" class="anchor" href="#installation-using-maven" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installation using Maven</h2>
+
+<p>If you want to include hyperSMURF info your java project you can use Maven to download the necessary files from Maven Central. You have to add this code under the <code>dependencies</code> section in your <code>pom.xml</code>:</p>
+
+<pre><code>&lt;dependency&gt;
+    &lt;groupId&gt;de.charite.compbio&lt;/groupId&gt;
+    &lt;artifactId&gt;hyperSMURF&lt;/artifactId&gt;
+    &lt;version&gt;0.2&lt;/version&gt;
+&lt;/dependency&gt;
+</code></pre>
+      </section>
+    </div>
+
+    
+  </body>
+</html>
