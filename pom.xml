@@ -4,9 +4,18 @@
 	<groupId>de.charite.compbio</groupId>
 	<artifactId>hyperSMURF</artifactId>
 	<packaging>jar</packaging>
-	<version>0.2-SNAPSHOT</version>
+	<version>0.2</version>
 	<name>hyperSMURF</name>
 	<url>http://maven.apache.org</url>
+
+
+	<!-- SCM Information for Maven Central -->
+	<scm>
+		<connection>scm:git:https://github.com/charite/hyperSMURF.git</connection>
+		<developerConnection>scm:git:https://github.com/charite/hyperSMURF.git</developerConnection>
+		<url>scm:git:https://github.com/charite/hyperSMURF.git</url>
+	</scm>
+
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -15,16 +24,20 @@
 	</properties>
 
 	<dependencies>
+		<!-- Weka -->
 		<dependency>
 			<groupId>nz.ac.waikato.cms.weka</groupId>
 			<artifactId>weka-dev</artifactId>
 			<version>3.9.0</version>
 		</dependency>
+		<!-- SMOTE -->
 		<dependency>
 			<groupId>nz.ac.waikato.cms.weka</groupId>
 			<artifactId>SMOTE</artifactId>
 			<version>1.0.3</version>
 		</dependency>
+
+		<!-- Everything for testing -->
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
@@ -122,12 +135,13 @@
 					<aggregate>true</aggregate>
 					<show>public</show>
 					<nohelp>true</nohelp>
-					<header>hyperSMURF, ${project.version}</header>
-					<footer>hyperSMURF, ${project.version}</footer>
-					<doctitle>hyperSMURF, ${project.version}</doctitle>
-					<links>
-						<link>http://static.springsource.org/spring/docs/3.0.x/javadoc-api/</link>
-					</links>
+					<header>${project.artifactId}, ${project.version}</header>
+					<footer>${project.artifactId}, ${project.version}</footer>
+					<doctitle>${project.artifactId}, ${project.version}</doctitle>
+					<destDir>${project.version}</destDir>
+					<reportOutputDirectory>${project.reporting.outputDirectory}/apidocs/api/</reportOutputDirectory>
+					<!-- <links> <link>https://charite.github.io/${project.artifactId}/api/${project.version}</link> 
+						</links> -->
 				</configuration>
 			</plugin>
 			<!-- Javadoc to gh-pages -->

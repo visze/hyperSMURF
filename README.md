@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.org/charite/hyperSMURF.svg?branch=master)](https://travis-ci.org/charite/hyperSMURF)
-[![API Docs](https://img.shields.io/badge/api-master-blue.svg?style=flat)](http://charite.github.io/hyperSMURF/api/master/)
+[![API Docs](https://img.shields.io/badge/api-v0.2-blue.svg?style=flat)](http://charite.github.io/hyperSMURF/api/0.2/)
 [![license](https://img.shields.io/badge/licence-GNU%20GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0.txt)
 
 
