@@ -12,8 +12,6 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<maven.compiler.source>1.8</maven.compiler.source>
-		<maven.compiler.testTarget>1.7</maven.compiler.testTarget>
-		<maven.compiler.testSource>1.7</maven.compiler.testSource>
 	</properties>
 
 	<dependencies>
@@ -76,17 +74,6 @@
 							<compilerArguments>
 								<source>${maven.compiler.target}</source>
 								<target>${maven.compiler.source}</target>
-							</compilerArguments>
-						</configuration>
-					</execution>
-					<execution>
-						<id>test-compile</id>
-						<configuration>
-							<showDeprecation>true</showDeprecation>
-							<showWarnings>true</showWarnings>
-							<compilerArguments>
-								<source>${maven.compiler.testSource}</source>
-								<target>${maven.compiler.testSource}</target>
 							</compilerArguments>
 						</configuration>
 					</execution>
