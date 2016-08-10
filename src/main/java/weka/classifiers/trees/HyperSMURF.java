@@ -7,7 +7,6 @@ import java.util.Vector;
 
 import weka.classifiers.Classifier;
 import weka.classifiers.RandomizableClassifier;
-import weka.classifiers.meta.Bagging;
 import weka.classifiers.meta.EasyEnsemble;
 import weka.classifiers.meta.FilteredClassifier;
 import weka.classifiers.meta.RandomizableFilteredClassifier;
@@ -31,7 +30,7 @@ import weka.filters.supervised.instance.SpreadSubsample;
  * <br/>
  * For more information, see<br/>
  * <br/>
- * Schubach M, Robinson PN, Valentini G. Unpublished.
+ * Schubach M, Re M, Robinson PN, Valentini G. Unpublished.
  * <p/>
  * <!-- globalinfo-end -->
  *
@@ -134,7 +133,7 @@ import weka.filters.supervised.instance.SpreadSubsample;
  * <p>
  *
  * @author <a href="mailto:max.schubach@charite.de">Max Schubach</a>
- * @version 0.1
+ * @version 0.2
  * 
  *
  */
@@ -142,8 +141,6 @@ public class HyperSMURF extends EasyEnsemble {
 
 	/** for serialization */
 	private static final long serialVersionUID = -4869310424420765879L;
-
-	protected Classifier m_Classifier = null;
 
 	// RandomForest
 
@@ -158,9 +155,6 @@ public class HyperSMURF extends EasyEnsemble {
 	/** Final number of features that were considered in last build. */
 	protected int m_KValue = 0;
 
-	/** The bagger. */
-	protected Bagging m_bagger = null;
-
 	/** The maximum depth of the trees (0 = unlimited) */
 	protected int m_MaxDepth = 0;
 
@@ -169,9 +163,6 @@ public class HyperSMURF extends EasyEnsemble {
 
 	/** Print the individual trees in the output */
 	protected boolean m_printTrees = false;
-
-	/** Don't calculate the out of bag error */
-	protected boolean m_dontCalculateOutOfBagError;
 
 	/** Whether to break ties randomly. */
 	protected boolean m_BreakTiesRandomly = false;
@@ -203,6 +194,13 @@ public class HyperSMURF extends EasyEnsemble {
 	/** whether to detect the minority class automatically. */
 	protected boolean m_DetectMinorityClass = true;
 
+	/** Default classifier. Null if you want to use a RandomForest as it comes along with HyperSMURF */
+	protected Classifier m_default_classifier = null;
+	
+	public HyperSMURF() {
+		m_Classifier = getFilteredClassifier();
+	}
+
 	/**
 	 * Returns a string describing classifier
 	 * 
@@ -222,6 +220,20 @@ public class HyperSMURF extends EasyEnsemble {
 	protected String defaultClassifierString() {
 
 		return "weka.classifiers.trees.RandomForest";
+	}
+
+	@Override
+	public String toString() {
+
+		if (m_Classifiers == null)
+			return "HyperSMURF: No model built yet.";
+
+		StringBuffer text = new StringBuffer();
+		text.append("All the base classifiers: \n\n");
+		for (int i = 0; i < m_Classifiers.length; i++)
+			text.append(m_Classifiers[i].toString() + "\n\n");
+
+		return text.toString();
 	}
 
 	@Override
@@ -469,39 +481,6 @@ public class HyperSMURF extends EasyEnsemble {
 	}
 
 	/**
-	 * Set whether to turn off the calculation of out of bag error
-	 * 
-	 * @param b
-	 *            true to turn off the calculation of out of bag error
-	 */
-	public void setDontCalculateOutOfBagError(boolean b) {
-		m_dontCalculateOutOfBagError = b;
-	}
-
-	/**
-	 * Get whether to turn off the calculation of out of bag error
-	 * 
-	 * @return true to turn off the calculation of out of bag error
-	 */
-	public boolean getDontCalculateOutOfBagError() {
-		return m_dontCalculateOutOfBagError;
-	}
-
-	/**
-	 * Gets the out of bag error that was calculated as the classifier was built.
-	 * 
-	 * @return the out of bag error
-	 */
-	public double measureOutOfBagError() {
-
-		if (m_bagger != null && !m_dontCalculateOutOfBagError) {
-			return m_bagger.measureOutOfBagError();
-		} else {
-			return Double.NaN;
-		}
-	}
-
-	/**
 	 * Set the number of execution slots (threads) to use for building the members of the ensemble.
 	 * 
 	 * @param numSlots
@@ -558,6 +537,7 @@ public class HyperSMURF extends EasyEnsemble {
 
 		m_BreakTiesRandomly = newBreakTiesRandomly;
 	}
+	
 
 	/**
 	 * Returns the tip text for this property.
@@ -779,18 +759,18 @@ public class HyperSMURF extends EasyEnsemble {
 
 	}
 
-	private Classifier getFilteredClassifier() throws Exception {
+	private Classifier getFilteredClassifier() {
 
 		MultiFilter mfilter = new MultiFilter();
 		mfilter.setDebug(m_Debug);
 		mfilter.setDoNotCheckCapabilities(m_DoNotCheckCapabilities);
 		mfilter.setFilters(new Filter[] { getSMOTE(), getSpreadSubsample() });
-		mfilter.setInputFormat(m_data);
+//		mfilter.setInputFormat(m_data);
 
 		FilteredClassifier classifier;
 
 		// Set the random forest as base learner if no other method is set.
-		if (m_Classifier == null || m_Classifier instanceof RandomizableClassifier) {
+		if (m_default_classifier == null || m_Classifier instanceof RandomizableClassifier) {
 			classifier = new RandomizableFilteredClassifier();
 			((RandomizableFilteredClassifier) classifier).setSeed(m_Seed);
 
@@ -802,7 +782,7 @@ public class HyperSMURF extends EasyEnsemble {
 		classifier.setBatchSize(m_BatchSize);
 		classifier.setDoNotCheckCapabilities(m_DoNotCheckCapabilities);
 		classifier.setFilter(mfilter);
-		if (m_Classifier == null)
+		if (m_default_classifier == null)
 			classifier.setClassifier(getRandomForest());
 		else
 			classifier.setClassifier(m_Classifier);
@@ -810,7 +790,7 @@ public class HyperSMURF extends EasyEnsemble {
 		return classifier;
 	}
 
-	private Filter getSpreadSubsample() throws Exception {
+	private Filter getSpreadSubsample() {
 		SpreadSubsample subsample = new SpreadSubsample();
 		subsample.setDistributionSpread(m_DistributionSpread);
 		subsample.setAdjustWeights(m_AdjustWeights);
@@ -818,11 +798,11 @@ public class HyperSMURF extends EasyEnsemble {
 		subsample.setRandomSeed(m_random.nextInt());
 		subsample.setDebug(m_Debug);
 		subsample.setDoNotCheckCapabilities(m_DoNotCheckCapabilities);
-		subsample.setInputFormat(m_data);
+//		subsample.setInputFormat(m_data);
 		return subsample;
 	}
 
-	private Filter getSMOTE() throws Exception {
+	private Filter getSMOTE() {
 		SMOTE smote = new SMOTE();
 		smote.setPercentage(m_Percentage);
 		smote.setNearestNeighbors(m_NearestNeighbors);
@@ -830,7 +810,7 @@ public class HyperSMURF extends EasyEnsemble {
 		smote.setClassValue(m_ClassValueIndex);
 		smote.setDoNotCheckCapabilities(m_DoNotCheckCapabilities);
 		smote.setDebug(m_Debug);
-		smote.setInputFormat(m_data);
+//		smote.setInputFormat(m_data);
 		return smote;
 	}
 
@@ -838,13 +818,13 @@ public class HyperSMURF extends EasyEnsemble {
 		RandomForest randomForest = new RandomForest();
 		randomForest.setBatchSize(m_BatchSize);
 		randomForest.setBreakTiesRandomly(m_BreakTiesRandomly);
-		randomForest.setDontCalculateOutOfBagError(m_dontCalculateOutOfBagError);
+		randomForest.setCalcOutOfBag(false);
 		randomForest.setMaxDepth(m_MaxDepth);
 		randomForest.setNumDecimalPlaces(m_numDecimalPlaces);
 		randomForest.setNumExecutionSlots(m_numRFExecutionSlots);
 		randomForest.setNumFeatures(m_numFeatures);
-		randomForest.setNumTrees(m_numTrees);
-		randomForest.setPrintTrees(m_printTrees);
+		randomForest.setNumIterations(m_numTrees);
+		randomForest.setPrintClassifiers(m_printTrees);
 		randomForest.setSeed(m_random.nextInt());
 		randomForest.setDoNotCheckCapabilities(m_DoNotCheckCapabilities);
 		randomForest.setDebug(m_Debug);
