@@ -20,15 +20,16 @@ import weka.filters.unsupervised.instance.RemoveWithValues;
 
 /**
  * <!-- globalinfo-start -->
- * 
+ * <p>
  * Class for EasyEnsemble. EasyEnsemble splits up the majority class into n partitions and trains n classifiers using
- * the majority partition and all minority classes.<br/>
- * <br/>
- * For more information, see<br/>
- * <br/>
+ * the majority partition and all minority classes.<br>
+ * <br>
+ * For more information, see<br>
+ * <br>
  * Liu X, Wu J, Zhou Z. Exploratory undersampling for class-imbalance learning. Systems,Man, and Cybernetics, Part B:
  * Cybernetics, IEEE Transactions on. 2009;39(2):539–550.
- * <p/>
+ * </p>
+ * 
  * <!-- globalinfo-end -->
  *
  * <!-- technical-bibtex-start --> BibTeX:
@@ -45,11 +46,11 @@ import weka.filters.unsupervised.instance.RemoveWithValues;
  *    Year = {2009}
  * }
  * </pre>
- * <p/>
+ * <p>
  * <!-- technical-bibtex-end -->
  *
  * <!-- options-start --> Valid options are:
- * <p/>
+ * </p>
  * 
  * <pre>
  *  -I &lt;num&gt;
@@ -83,12 +84,11 @@ import weka.filters.unsupervised.instance.RemoveWithValues;
  *  (default: weka.classifiers.rules.ZeroR)
  * </pre>
  * 
- * <pre>
  * 
  * <!-- options-end -->
- *
- * Options after -- are passed to the designated classifier.
  * <p>
+ * Options after -- are passed to the designated classifier.
+ * </p>
  *
  * @author <a href="mailto:max.schubach@charite.de">Max Schubach</a>
  * @version 0.2
@@ -157,11 +157,13 @@ public class EasyEnsemble extends RandomizableParallelIteratedSingleClassifierEn
 	}
 
 	/**
-	 * Parses a given list of options.
-	 * <p/>
+	 * <p>
+	 * 	Parses a given list of options.
+	 * </p>
 	 *
-	 * <!-- options-start --> Valid options are:
-	 * <p/>
+	 * <p>
+	 * 	<!-- options-start --> Valid options are:
+	 * </p>
 	 * 
 	 * <pre>
 	 *  -I &lt;num&gt;
@@ -195,12 +197,12 @@ public class EasyEnsemble extends RandomizableParallelIteratedSingleClassifierEn
 	 *  (default: weka.classifiers.rules.ZeroR)
 	 * </pre>
 	 * 
-	 * <pre>
 	 * 
 	 * <!-- options-end -->
 	 *
-	 * Options after -- are passed to the designated classifier.
 	 * <p>
+	 * Options after -- are passed to the designated classifier.
+	 * </p>
 	 *
 	 * @param options
 	 *            the list of options as an array of strings
