@@ -9,6 +9,21 @@
 	<url>http://maven.apache.org</url>
 
 
+	<!-- Inherit artifact from SonaType OSS pom.xml Following this article: 
+		http://java.dzone.com/articles/deploy-maven-central -->
+
+
+	<!-- Developers Information for Maven Central -->
+	<developers>
+		<developer>
+			<name>Max Schubach</name>
+			<email>max.schubach@charite.de</email>
+			<organization>Charite Universitaetsmedizin Berlin</organization>
+			<organizationUrl>http://www.charite.de</organizationUrl>
+		</developer>
+	</developers>
+
+
 	<!-- SCM Information for Maven Central -->
 	<scm>
 		<connection>scm:git:https://github.com/charite/hyperSMURF.git</connection>
@@ -60,8 +75,17 @@
 	</dependencies>
 
 
+	<!-- distribution to upload to sonatype -->
+	<distributionManagement>
+		<snapshotRepository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+		</snapshotRepository>
+	</distributionManagement>
+
 
 	<build>
+
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -92,6 +116,7 @@
 					</execution>
 				</executions>
 			</plugin>
+
 			<!-- JUnit testing -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -108,6 +133,7 @@
 					</systemPropertyVariables>
 				</configuration>
 			</plugin>
+
 			<!-- creating WEKA plugin -->
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
@@ -126,7 +152,52 @@
 					</execution>
 				</executions>
 			</plugin>
-			<!-- Javadoc -->
+
+			<!-- sonatype plugin -->
+			<plugin>
+				<groupId>org.sonatype.plugins</groupId>
+				<artifactId>nexus-staging-maven-plugin</artifactId>
+				<version>1.6.7</version>
+				<extensions>true</extensions>
+				<configuration>
+					<serverId>ossrh</serverId>
+					<nexusUrl>https://oss.sonatype.org/</nexusUrl>
+					<autoReleaseAfterClose>true</autoReleaseAfterClose>
+				</configuration>
+			</plugin>
+
+			<!-- GPG plugin -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-gpg-plugin</artifactId>
+				<version>1.6</version>
+				<executions>
+					<execution>
+						<id>sign-artifacts</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>sign</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!-- Attach sources -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>3.0.1</version>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar-no-fork</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!-- Javadoc and attach it -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
@@ -137,13 +208,24 @@
 					<nohelp>true</nohelp>
 					<header>${project.artifactId}, ${project.version}</header>
 					<footer>${project.artifactId}, ${project.version}</footer>
-					<doctitle>${project.artifactId}, ${project.version}</doctitle>
+					<doctitle>${project.artifactId},
+						${project.version}</doctitle>
 					<destDir>${project.version}</destDir>
 					<reportOutputDirectory>${project.reporting.outputDirectory}/apidocs/api/</reportOutputDirectory>
-					<!-- <links> <link>https://charite.github.io/${project.artifactId}/api/${project.version}</link> 
-						</links> -->
+					<links>
+						<link>https://charite.github.io/${project.artifactId}/api/${project.version}</link>
+					</links>
 				</configuration>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
+
 			<!-- Javadoc to gh-pages -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
