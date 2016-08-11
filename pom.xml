@@ -6,11 +6,13 @@
 	<packaging>jar</packaging>
 	<version>0.2</version>
 	<name>hyperSMURF</name>
-	<url>http://maven.apache.org</url>
-
-
-	<!-- Inherit artifact from SonaType OSS pom.xml Following this article: 
-		http://java.dzone.com/articles/deploy-maven-central -->
+	<url>https://charite.github.io/hyperSMURF/</url>
+	<licenses>
+		<license>
+			<name>GNU GENERAL PUBLIC LICENSE, Version 3</name>
+			<url>https://www.gnu.org/licenses/gpl-3.0.txt</url>
+		</license>
+	</licenses>
 
 
 	<!-- Developers Information for Maven Central -->
@@ -261,4 +263,5 @@
 			</build>
 		</profile>
 	</profiles>
+	<description>Weka implementation of hyperSMURF using EasyEnsemble and SMOTE</description>
 </project>
