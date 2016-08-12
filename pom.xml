@@ -212,6 +212,20 @@
 									</goals>
 								</execution>
 							</executions>
+							<configuration>
+								<aggregate>true</aggregate>
+								<show>public</show>
+								<nohelp>true</nohelp>
+								<header>${project.artifactId}, ${project.version}</header>
+								<footer>${project.artifactId}, ${project.version}</footer>
+								<doctitle>${project.artifactId},
+									${project.version}</doctitle>
+								<destDir>${project.version}</destDir>
+								<reportOutputDirectory>${project.reporting.outputDirectory}/apidocs/api/</reportOutputDirectory>
+								<links>
+									<link>https://charite.github.io/${project.artifactId}/api/${project.version}</link>
+								</links>
+							</configuration>
 						</plugin>
 					</plugins>
 				</pluginManagement>

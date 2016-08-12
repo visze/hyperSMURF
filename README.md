@@ -45,7 +45,7 @@ Open Weka, go to the package manager, and load the file `hyperSMURF-0.2-weka.zip
 
 ## Installation using Maven
 
-If you want to include hyperSMURF info your java project you can use Maven to download the necessary files from Maven Central. You have to add this code under the `dependencies` section in your `pom.xml`:
+If you want to include hyperSMURF into your java project you can use Maven to download the necessary files from Maven Central. You have to add this code under the `dependencies` section in your `pom.xml`:
 
 ```
 <dependency>
