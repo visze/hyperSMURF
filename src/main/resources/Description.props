@@ -8,10 +8,10 @@ PackageName=hyperSMURF
 Version=0.2.0
 
 #Date (year-month-day)
-Date=2016-05-23
+Date=2016-08-16
 
 # Title (required)
-Title=Hyper SMOTE Undersampling with Random Forests (HyperSMURF)
+Title=Hyper SMOTE Undersampling with Random Forests (hyperSMURF)
 
 # Category (recommended)
 Category=Ensemble learning, Classification
@@ -26,13 +26,13 @@ Maintainer=Max Schubach <max.schubach@charite.de>
 License=GNU General Public License v3.0
 
 # Description (required)
-Description=A one paragraph description of the package.
+Description=Weka implementation of hyperSMURF using EasyEnsemble and SMOTE.
 
 # Package URL for obtaining the package archive (required)
-PackageURL=http://somewhere.net/weka/funkyPackage.zip?download
+PackageURL=http://charite.github.io/hyperSMURF/weka/hyperSMURF-0.2-weka.zip
 
 # URL for further information
-URL=http://somewhere.net/funkyResearchInfo.html
+URL=http://charite.github.io/hyperSMURF/
 
 # Enhances various other packages ?
 #Enhances=packageName1,packageName2,...
@@ -43,7 +43,7 @@ URL=http://somewhere.net/funkyResearchInfo.html
 #Related=
 
 # Dependencies (format: packageName (equality/inequality version_number)
-Depends=weka (>=3.9.0),SMOTE (>=1.0.3)
+Depends=weka (>=3.9.0)
 
 # Message to display in installation. Can be used to provide
 # special instructions (e.g. manual stuff needed to complete
