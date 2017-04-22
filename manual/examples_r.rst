@@ -103,12 +103,12 @@ We can also apply the version of hyperSMURF that embeds a feature selection step
 Usage examples with genetic data
 ===================================
 
-HyperSMURF was designed to predict rare genomic variants, when the available examples of such variants are substantially less than `background` examples. This is a typical situation with genetic variants. For instance, we have only a small set of available variants known to be associated with Mendelian diseases in non-coding regions (positive examples) against the sea of background variants, i.e. a ratio of about :math:`1:36,000` between positive and negative examples~\cite{Smedley16}.
+HyperSMURF was designed to predict rare genomic variants, when the available examples of such variants are substantially less than `background` examples. This is a typical situation with genetic variants. For instance, we have only a small set of available variants known to be associated with Mendelian diseases in non-coding regions (positive examples) against the sea of background variants, i.e. a ratio of about :math:`1:36,000` between positive and negative examples [Smedley2016]_.
 
-Here we show how to use hyperSMURF to detect these rare features using data sets obtained from the original large set of Mendelian data~\cite{Smedley16}. 
+Here we show how to use hyperSMURF to detect these rare features using data sets obtained from the original large set of Mendelian data [Smedley2016]_. 
 To provide usage examples that do not require more than 1 minute of computation time on a modern desktop computer, we considered data sets downsampled from the original Mendelian data set described in the `mendelian data` section of the main manuscript (this data set includes more than 14 millions of genetic variants).
 In particular we constructed Mendelian data sets with a progressive larger imbalance between Mendelian associated mutations and background genetic variants. We start with an artificially balanced data set, and then we consider progressively imbalanced data sets with ratio `positive:negative` varying from :math:`1:10`, to  :math:`1:100` and  :math:`1:1000`.
-These data sets are downloadable as compressed `.rda` R objects from `http://homes.di.unimi.it/valentini/DATA/Mendelian<http://homes.di.unimi.it/valentini/DATA/Mendelian>`_.
+These data sets are downloadable as compressed `.rda` R objects from `http://homes.di.unimi.it/valentini/DATA/Mendelian <http://homes.di.unimi.it/valentini/DATA/Mendelian>`_.
 
 The `Mendelian_balanced.rda` file include 3 objects: `m.subset`, that includes the input features of the balanced examples (406 positives and 400 negatives), `labels.subset`, i.e. the corresponding labels, and `folds.subset` a vector with the number of the fold in which each example will be included according to the 10-fold cytoband-aware CV procedure (see Supplementary Note~2). 
 The following lines of code load the data and perform a 10-fold cytoband-aware CV and compute the AUROC and AUPRC:
@@ -180,3 +180,8 @@ We can perform the same task using parallel computation. For instance, by using 
 	res <- hyperSMURF.cv.parallel(m.subset, factor(labels.subset, levels=c(1,0)), kk = 10, n.part = 10, fp = 2, ratio = 3, k = 5, ntree = 10, mtry = 6,  seed = 1, fold.partition = folds.subset, ncores=4);
 
 Of course the training and  CV functions allow to set also the parameters of the RF ensembles, that constitute the base learners of the hyperSMURF hyper-ensemble, such as the number of decision trees to be used for each RF (parameter `ntree`) or the number of features to be randomly selected from the set of available input features at each step of the inductive learning of the decision tree (parameter `mtry`). The full description of all the parameters and the output of each function is available in the PDF and HTML documentation included in the hyperSMURF R package.
+
+
+.. rubric:: References
+
+.. [Smedley2016] Smedley, Damian, et al. "A whole-genome analysis framework for effective identification of pathogenic regulatory variants in Mendelian disease." The American Journal of Human Genetics 99.3 (2016): 595-606.
