@@ -4,6 +4,10 @@
 Examples using the Java package
 ================================
 
+In this section we will create a new Maven project, called hyperSMURF-tutorial, and using hyperSMURF together with Weka to train some tasks. Therefore we first have to set up an Maven project which will handle all libraries for us. Then we will start with a synthetic example. Afterwards we are using real genetic data for training. All files of this tutorial are available `here <http://www.github.com/charite/hyperSMURF-tutorial>_`
+
+.. requirements:
+
 .. _synthetic:
 
 Simple usage examples using synthetic data
@@ -26,14 +30,14 @@ Then we construct two imbalanced data sets (training and test set) having both 2
 Then we can train and test the model with the following code:
 
 
-.. code-block:: r 
-	
+.. code-block:: r
+
 	HSmodel <- hyperSMURF.train(train$data, train$label, n.part = 10, fp = 2, ratio = 3);
 	res <- hyperSMURF.test(test$data, HSmodel);
 
 Note that we used 10 partitions of the training data (parameter `n.part` that corresponds to the parameter `n` in the pseudo-code of the algorithm in Supplementary Note 1), a SMOTE oversampling equal to 2 (parameter `fp` corresponding to the `f` parameter in the pseudo-code), and undersampling ratio equal to 3 (parameter `ratio` corresponding to the parameter `m` of the modified second line of the \Hy~algorithm in Supplementary Note~1). In other words the negative examples were partitioned in 10 sets of equal size (200 examples). Then a different RF was trained using: a) the available 20 positive examples, plus the "augmented" 40 synthetic positive examples obtained by SMOTE convex combination of close positive examples, and b) a set of :math:`3 \times 60 = 180` negative examples randomly extracted from the partition (see Supplementary Note 1). The obtained hyperSMURF model (`HSModel`), that includes 10 different RF (one for each partition), is finally tested on the test set.
 
-We can easily obtain the confusion matrix: 
+We can easily obtain the confusion matrix:
 
 .. code-block:: r
 
@@ -68,8 +72,8 @@ To perform a 5 fold CV on a given data set we need only 1 line of R code:
 
 .. code-block:: r
 
-	res <- hyperSMURF.cv(train$data, train$labels, kk = 5, n.part = 10, fp = 1, ratio = 1); 
-	
+	res <- hyperSMURF.cv(train$data, train$labels, kk = 5, n.part = 10, fp = 1, ratio = 1);
+
 	To compute the AUROC and the AUPRC  (respectively the area under the ROC curve and the area under the precision/recall curve) we can use the `precrec` package:
 
 .. code-block:: r
@@ -82,20 +86,20 @@ To perform a 5 fold CV on a given data set we need only 1 line of R code:
 	AUROC <-  round(m[1,"aucs"],digits);
 	AUPRC <-  round(m[2,"aucs"],digits);
 	cat ("AUROC = ", AUROC, "\n", "AUPRC = ", AUPRC, "\n");
-	AUROC =  0.9972 
-	AUPRC =  0.8540 
+	AUROC =  0.9972
+	AUPRC =  0.8540
 
 We can also apply the version of hyperSMURF that embeds a feature selection step on the training data to select the features most correlated with the labels:
 
 .. code-block:: r
-	
+
 	res <-hyperSMURF.corr.cv.parallel(train$data, train$labels, kk = 5, n.part = 10, fp = 1, ratio = 1, mtry=3, n.feature = 6);
 	sscurves <- evalmod(scores = res, labels = labels);
 	m<-attr(sscurves,"auc",exact=FALSE);
 	AUROC <-  round(m[1,"aucs"],digits);
 	AUPRC <-  round(m[2,"aucs"],digits);
 	cat ("AUROC = ", AUROC, "\n", "AUPRC = ", AUPRC, "\n");
-	AUROC =  0.9982 
+	AUROC =  0.9982
 	AUPRC =  0.9190
 
 .. [#note] Note that the results may vary slightly due to the randomization in the algorithm.
@@ -105,26 +109,26 @@ Usage examples with genetic data
 
 HyperSMURF was designed to predict rare genomic variants, when the available examples of such variants are substantially less than `background` examples. This is a typical situation with genetic variants. For instance, we have only a small set of available variants known to be associated with Mendelian diseases in non-coding regions (positive examples) against the sea of background variants, i.e. a ratio of about :math:`1:36,000` between positive and negative examples~\cite{Smedley16}.
 
-Here we show how to use hyperSMURF to detect these rare features using data sets obtained from the original large set of Mendelian data~\cite{Smedley16}. 
+Here we show how to use hyperSMURF to detect these rare features using data sets obtained from the original large set of Mendelian data~\cite{Smedley16}.
 To provide usage examples that do not require more than 1 minute of computation time on a modern desktop computer, we considered data sets downsampled from the original Mendelian data set described in the `mendelian data` section of the main manuscript (this data set includes more than 14 millions of genetic variants).
 In particular we constructed Mendelian data sets with a progressive larger imbalance between Mendelian associated mutations and background genetic variants. We start with an artificially balanced data set, and then we consider progressively imbalanced data sets with ratio `positive:negative` varying from :math:`1:10`, to  :math:`1:100` and  :math:`1:1000`.
 These data sets are downloadable as compressed `.rda` R objects from `http://homes.di.unimi.it/valentini/DATA/Mendelian<http://homes.di.unimi.it/valentini/DATA/Mendelian>`_.
 
-The `Mendelian_balanced.rda` file include 3 objects: `m.subset`, that includes the input features of the balanced examples (406 positives and 400 negatives), `labels.subset`, i.e. the corresponding labels, and `folds.subset` a vector with the number of the fold in which each example will be included according to the 10-fold cytoband-aware CV procedure (see Supplementary Note~2). 
+The `Mendelian_balanced.rda` file include 3 objects: `m.subset`, that includes the input features of the balanced examples (406 positives and 400 negatives), `labels.subset`, i.e. the corresponding labels, and `folds.subset` a vector with the number of the fold in which each example will be included according to the 10-fold cytoband-aware CV procedure (see Supplementary Note~2).
 The following lines of code load the data and perform a 10-fold cytoband-aware CV and compute the AUROC and AUPRC:
 
 .. code-block:: r
-	
+
 	load("Mendelian_balanced.rda");
 	res <- hyperSMURF.cv(m.subset, factor(labels.subset, levels=c(1,0)), kk = 10, n.part = 2, fp = 0, ratio = 1, k = 5, ntree = 10, mtry = 6,  seed = 1, fold.partition = folds.subset);
-	
+
 	sscurves <- evalmod(scores = res, labels = labels.subset);
 	m<-attr(sscurves,"auc",exact=FALSE);
 	AUROC <-  round(m[1,"aucs"],digits);
 	AUPRC <-  round(m[2,"aucs"],digits);
 	cat ("AUROC = ", AUROC, "\n", "AUPRC = ", AUPRC, "\n");
-	AUROC =  0.9903 
-	AUPRC =  0.9893 
+	AUROC =  0.9903
+	AUPRC =  0.9893
 
 Then we can perform the same computation using the progressively imbalanced data sets:
 
@@ -132,18 +136,18 @@ Then we can perform the same computation using the progressively imbalanced data
 
 	# Imbalance 1:10. about 400 positives and 4000 negative variants
 	load("Mendelian_1:10.rda");
-	
-	res <- hyperSMURF.cv(m.subset, factor(labels.subset, levels=c(1,0)), kk = 10, n.part = 5, 
+
+	res <- hyperSMURF.cv(m.subset, factor(labels.subset, levels=c(1,0)), kk = 10, n.part = 5,
 	fp = 1, ratio = 1, k = 5, ntree = 10, mtry = 6,  seed = 1, fold.partition = folds.subset);
-	
+
 	sscurves <- evalmod(scores = res, labels = labels.subset);
 	m<-attr(sscurves,"auc",exact=FALSE);
 	AUROC <-  round(m[1,"aucs"],digits);
 	AUPRC <-  round(m[2,"aucs"],digits);
 	cat ("AUROC = ", AUROC, "\n", "AUPRC = ", AUPRC, "\n");
-	AUROC =  0.9915 
-	AUPRC =  0.9583 
-	
+	AUROC =  0.9915
+	AUPRC =  0.9583
+
 	# Imbalance 1:100. about 400 positives and 40000 negative variants
 	load("Mendelian_1:100.rda");
 	res <- hyperSMURF.cv(m.subset, factor(labels.subset, levels=c(1,0)), kk = 10, n.part = 10, fp = 2, ratio = 3, k = 5, ntree = 10, mtry = 6,  seed = 1, fold.partition = folds.subset);
@@ -153,13 +157,13 @@ Then we can perform the same computation using the progressively imbalanced data
 	AUROC <-  round(m[1,"aucs"],digits);
 	AUPRC <-  round(m[2,"aucs"],digits);
 	cat ("AUROC = ", AUROC, "\n", "AUPRC = ", AUPRC, "\n");
-	AUROC =  0.9922 
-	AUPRC =  0.9 
+	AUROC =  0.9922
+	AUPRC =  0.9
 
 	# Imbalance 1:1000. about 400 positives and 400000 negative variants
 	load("Mendelian_1:1000.rda");
- 
-	res <- hyperSMURF.cv(m.subset, factor(labels.subset, levels=c(1,0)), kk = 10, n.part = 10, 
+
+	res <- hyperSMURF.cv(m.subset, factor(labels.subset, levels=c(1,0)), kk = 10, n.part = 10,
 	fp = 2, ratio = 3, k = 5, ntree = 10, mtry = 6,  seed = 1, fold.partition = folds.subset);
 
 	sscurves <- evalmod(scores = res, labels = labels.subset);
@@ -167,7 +171,7 @@ Then we can perform the same computation using the progressively imbalanced data
 	AUROC <-  round(m[1,"aucs"],digits);
 	AUPRC <-  round(m[2,"aucs"],digits);
 	cat ("AUROC = ", AUROC, "\n", "AUPRC = ", AUPRC, "\n");
-	AUROC =  0.9901 
+	AUROC =  0.9901
 	AUPRC =  0.7737
 
 As we can see, we have a certain decrement of the performances when the imbalance increases. Indeed when we have perfectly balanced data the AUPRC is very close to 1, while by increasing the imbalance we have a progressive decrement of the AUPRC to 0.9583, 0.9000, till to 0.7737 when we have a :math:`1:1000` imbalance ratio. Nevertheless this decline in  performance is relatively small compared to that of state-of-the-art imbalance-unaware learning methods (see Fig. 5 in the main manuscript).

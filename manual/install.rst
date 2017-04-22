@@ -41,7 +41,7 @@ For building hyperSMURF, you will need
 Git Checkout
 ------------
 
-In this tutorial, we will download the hyperSMURF sources and build them in ``~/Development/SIMdrom``.
+In this tutorial, we will download the hyperSMURF sources and build them in ``~/hyperSMURF``.
 
 .. code-block:: console
 
