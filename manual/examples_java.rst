@@ -173,9 +173,8 @@ The next step will be the performance testing of hyperSMURF on the new generated
 			filter.setOutputErrorFlag(true);
 			filter.setInputFormat(train);
 			Filter.useFilter(train, filter); // trains the classifier
-			Instances pred = Filter.useFilter(test, filter); // perform
-																// predictions
-																// on test set
+			// perform predictions on test set
+			Instances pred = Filter.useFilter(test, filter);
 			if (predictedData == null)
 				predictedData = new Instances(pred, 0);
 			for (int j = 0; j < pred.numInstances(); j++)
@@ -213,9 +212,9 @@ Finally we can use test hyperSMURF by running :java:`classify(clsHyperSMURF, imb
 
 	=== Details ===
 	                 TP Rate  FP Rate  Precision  Recall   F-Measure  MCC      ROC Area  PRC Area  Class
-	                 0,280    0,001    0,609      0,280    0,384      0,410    0,895     0,337     c0
-	                 0,999    0,720    0,995      0,999    0,997      0,410    0,895     0,999     c1
-	Weighted Avg.    0,994    0,715    0,993      0,994    0,993      0,410    0,895     0,995
+	                 0.280    0.001    0.609      0.280    0.384      0.410    0.895     0.337     c0
+	                 0.999    0.720    0.995      0.999    0.997      0.410    0.895     0.999     c1
+	Weighted Avg.    0.994    0.715    0.993      0.994    0.993      0.410    0.895     0.995
 	
 
 So we will get an AUROC of 0.895 and an AUPRC of 0.337 for our minority class `c0`. We can also use a Random Forest classifier using the same number of random trees to see the differences:
@@ -261,7 +260,7 @@ So this will be the blank `MendelianExample.java` class:
 		 */
 		 private static int SEED = 42;
 		 /**
-		 * The number of folds are predifined in the dataset
+		 * The number of folds are predefined in the dataset
 		 */
 		 private static int FOLDS = 10;
 	
@@ -280,77 +279,218 @@ To read the data we simply can use the ArffLoader from Weka. We will use the fir
 	reader.setFile(new File(args[0]));
 	Instances instances = reader.getDataSet();
 	
+Then we have to set the class attribute. This is the last attribute of our instances. So we write :java:`instances.setClassIndex(instances.numAttributes() - 1);`. Because we have a balanced dataset of the Mendelian data we do not need to do Over or undersampling. So we simply run hyperSMURF with two partitions and a forest size of ten. Over and undersampling settings have to be set to 0.
+
+.. code-block:: java
+
+	// setup the hyperSMURF classifier
+	HyperSMURF clsHyperSMURF = new HyperSMURF();
+	clsHyperSMURF.setNumIterations(2);
+	clsHyperSMURF.setNumTrees(10);
+	clsHyperSMURF.setDistributionSpread(0);
+	clsHyperSMURF.setPercentage(0.0);
+	clsHyperSMURF.setSeed(SEED);
 
 
-The following lines of code load the data and perform a 10-fold cytoband-aware CV and compute the AUROC and AUPRC:
+Now we arrived at the special cytogenetic band-aware cross-validation. The folds are predefined as attribute `fold` in the instances object. So we have to select the instances on that fold but have to remove the fold attribute before training or testing a classifier. So we will wite a small helper method that gives us a given fold for testing or the inverse for training. The blank method can be written like this:
 
-.. code-block:: r
+ .. code-block: java
+ 
+	 private static Instances getFold(Instances instances, int fold, boolean invert) throws Exception {
 
-	load("Mendelian_balanced.rda");
-	res <- hyperSMURF.cv(m.subset, factor(labels.subset, levels=c(1,0)), kk = 10, n.part = 2, fp = 0, ratio = 1, k = 5, ntree = 10, mtry = 6,  seed = 1, fold.partition = folds.subset);
+ 	}
+ 
 
-	sscurves <- evalmod(scores = res, labels = labels.subset);
-	m<-attr(sscurves,"auc",exact=FALSE);
-	AUROC <-  round(m[1,"aucs"],digits);
-	AUPRC <-  round(m[2,"aucs"],digits);
-	cat ("AUROC = ", AUROC, "\n", "AUPRC = ", AUPRC, "\n");
-	AUROC =  0.9903
-	AUPRC =  0.9893
+We will use the filter `SubsetbyExpression` to get the instances with the fold and we can simply use the `Instances` method `deteleAttributeAt(int index)` to remove the fold attribute. For `SubsetbyExpression` filter we write a regular expression like `Attribute = n` or `!(Attribute = n)` to get the `n`th fold (or all other folds). Attribute will be written by like `ATT`  with the index (count from 1) of the attribute. This we can get using :java:`int indexFold = instances.attribute("fold").index();` (started with 0) and we have to increment it by one for our filter method. So the content of our `getFold` method can look like:
 
-Then we can perform the same computation using the progressively imbalanced data sets:
+.. code-block:: java
 
-.. code-block:: r
+	// filter on fold variable
+	int indexFold = instances.attribute("fold").index();
+	SubsetByExpression filterFold = new SubsetByExpression();
+	if (invert)
+		filterFold.setExpression("!(ATT" + (indexFold + 1) + " = " + fold + ")");
+	else
+		filterFold.setExpression("ATT" + (indexFold + 1) + " = " + fold);
+	filterFold.setInputFormat(instances);
+	Instances filtered = Filter.useFilter(instances, filterFold);
+	
+	// remove fold attribute
+	filtered.deleteAttributeAt(indexFold);
 
-	# Imbalance 1:10. about 400 positives and 4000 negative variants
-	load("Mendelian_1:10.rda");
+	return filtered;
+	
+Now it is time for the cross-validation this is similar to the Synthetic Example but we will use the `getFold` method to make the train/test partitioning.
 
-	res <- hyperSMURF.cv(m.subset, factor(labels.subset, levels=c(1,0)), kk = 10, n.part = 5,
-	fp = 1, ratio = 1, k = 5, ntree = 10, mtry = 6,  seed = 1, fold.partition = folds.subset);
+.. code-block:: java
 
-	sscurves <- evalmod(scores = res, labels = labels.subset);
-	m<-attr(sscurves,"auc",exact=FALSE);
-	AUROC <-  round(m[1,"aucs"],digits);
-	AUPRC <-  round(m[2,"aucs"],digits);
-	cat ("AUROC = ", AUROC, "\n", "AUPRC = ", AUPRC, "\n");
-	AUROC =  0.9915
-	AUPRC =  0.9583
+	// perform cross-validation and add predictions
+	Instances predictedData = null;
+	Evaluation eval = new Evaluation(instances);
+	for (int n = 0; n < FOLDS; n++) {
+		System.out.println("Training fold " + (n+1) + " from " + FOLDS + "...");
+		Instances train = getFold(instances, n, true);
+		Instances test = getFold(instances, n, false);
 
-	# Imbalance 1:100. about 400 positives and 40000 negative variants
-	load("Mendelian_1:100.rda");
-	res <- hyperSMURF.cv(m.subset, factor(labels.subset, levels=c(1,0)), kk = 10, n.part = 10, fp = 2, ratio = 3, k = 5, ntree = 10, mtry = 6,  seed = 1, fold.partition = folds.subset);
+		// build and evaluate classifier
+		Classifier clsCopy = AbstractClassifier.makeCopy(cls);
+		clsCopy.buildClassifier(train);
+		eval.evaluateModel(clsCopy, test);
 
-	sscurves <- evalmod(scores = res, labels = labels.subset);
-	m<-attr(sscurves,"auc",exact=FALSE);
-	AUROC <-  round(m[1,"aucs"],digits);
-	AUPRC <-  round(m[2,"aucs"],digits);
-	cat ("AUROC = ", AUROC, "\n", "AUPRC = ", AUPRC, "\n");
-	AUROC =  0.9922
-	AUPRC =  0.9
+		// add predictions
+		AddClassification filter = new AddClassification();
+		filter.setClassifier(cls);
+		filter.setOutputClassification(true);
+		filter.setOutputDistribution(true);
+		filter.setOutputErrorFlag(true);
+		filter.setInputFormat(train);
+		Filter.useFilter(train, filter); // trains the classifier
+		// perform predictions on test set
+		Instances pred = Filter.useFilter(test, filter); 
+		if (predictedData == null)
+			predictedData = new Instances(pred, 0);
+		for (int j = 0; j < pred.numInstances(); j++)
+			predictedData.add(pred.instance(j));
+	}
 
-	# Imbalance 1:1000. about 400 positives and 400000 negative variants
-	load("Mendelian_1:1000.rda");
+	// output evaluation
+	System.out.println();
+	System.out.println("=== Setup ===");
+	System.out.println("Classifier: " + cls.getClass().getName() + " " + Utils.joinOptions(cls.getOptions()));
+	System.out.println("Dataset: " + instances.relationName());
+	System.out.println("Folds: " + FOLDS);
+	System.out.println("Seed: " + SEED);
+	System.out.println();
+	System.out.println(eval.toSummaryString("=== " + FOLDS + "-fold Cross-validation ===", false));
+	System.out.println();
+	System.out.println(eval.toClassDetailsString("=== Details ==="));
 
-	res <- hyperSMURF.cv(m.subset, factor(labels.subset, levels=c(1,0)), kk = 10, n.part = 10,
-	fp = 2, ratio = 3, k = 5, ntree = 10, mtry = 6,  seed = 1, fold.partition = folds.subset);
+If we run hyperSMURF with the settings above the command-line output will show a AUPRC 0.989 of and an AUROC of 0.989 of our class `1` which are the Mendelian regulatory mutations. This is the complete output:
 
-	sscurves <- evalmod(scores = res, labels = labels.subset);
-	m<-attr(sscurves,"auc",exact=FALSE);
-	AUROC <-  round(m[1,"aucs"],digits);
-	AUPRC <-  round(m[2,"aucs"],digits);
-	cat ("AUROC = ", AUROC, "\n", "AUPRC = ", AUPRC, "\n");
-	AUROC =  0.9901
-	AUPRC =  0.7737
+.. code-block:: text
+	
+	=== 10-fold Cross-validation ===
+	Correctly Classified Instances         770               95.5335 %
+	Incorrectly Classified Instances        36                4.4665 %
+	Kappa statistic                          0.9107
+	Mean absolute error                      0.0898
+	Root mean squared error                  0.1925
+	Relative absolute error                 17.9538 %
+	Root relative squared error             38.4915 %
+	Total Number of Instances              806     
 
-As we can see, we have a certain decrement of the performances when the imbalance increases. Indeed when we have perfectly balanced data the AUPRC is very close to 1, while by increasing the imbalance we have a progressive decrement of the AUPRC to 0.9583, 0.9000, till to 0.7737 when we have a :math:`1:1000` imbalance ratio. Nevertheless this decline in  performance is relatively small compared to that of state-of-the-art imbalance-unaware learning methods (see Fig. 5 in the main manuscript).
+
+	=== Details ===
+	                 TP Rate  FP Rate  Precision  Recall   F-Measure  MCC      ROC Area  PRC Area  Class
+	                 0.985    0.074    0.929      0.985    0.956      0.912    0.989     0.983     0
+	                 0.926    0.015    0.984      0.926    0.954      0.912    0.989     0.989     1
+	Weighted Avg.    0.955    0.044    0.957      0.955    0.955      0.912    0.989     0.986
+	
+	
+Then we can perform the same computation using the progressively imbalanced data sets: `Mendelian.1_10.arff.gz`, `Mendelian.1_100.arff.gz`, and `Mendelian.1_1000.arff.gz`. Of course every time we have to adapt the settings of hyperSMURF.
+
+Using `Mendelian.1_10.arff.gz` hyperSUMRF and the output can look like:
+
+.. code-block:: java
+
+	// setup the hyperSMURF classifier
+	clsHyperSMURF = new HyperSMURF();
+	clsHyperSMURF.setNumIterations(5);
+	clsHyperSMURF.setNumTrees(10);
+	clsHyperSMURF.setDistributionSpread(0);
+	clsHyperSMURF.setPercentage(100.0);
+	clsHyperSMURF.setSeed(SEED);
+	
+.. code-block:: text
+
+	=== 10-fold Cross-validation ===
+	Correctly Classified Instances        4310               97.8212 %
+	Incorrectly Classified Instances        96                2.1788 %
+	Kappa statistic                          0.8779
+	Mean absolute error                      0.0577
+	Root mean squared error                  0.1427
+	Relative absolute error                 34.4437 %
+	Root relative squared error             49.3333 %
+	Total Number of Instances             4406     
 
 
-We can perform the same task using parallel computation. For instance, by using 4 cores with an Intel i7-2670QM CPU, 2.20GHz, less than 1 minute is necessary to perform a full 10-fold cytoband-aware CV using 406 genetic variants known to be associated with Mendelian diseases and 400,000 background variants:
+	=== Details ===
+	                 TP Rate  FP Rate  Precision  Recall   F-Measure  MCC      ROC Area  PRC Area  Class
+	                 0.981    0.044    0.995      0.981    0.988      0.880    0.990     0.999     0
+	                 0.956    0.020    0.833      0.956    0.890      0.880    0.990     0.950     1
+	Weighted Avg.    0.978    0.042    0.980      0.978    0.979      0.880    0.990     0.994
+	
+	
+Increasing the imbalance with `Mendelian.1_100.arff.gz`:
 
-.. code-block:: r
+.. code-block:: java
 
-	res <- hyperSMURF.cv.parallel(m.subset, factor(labels.subset, levels=c(1,0)), kk = 10, n.part = 10, fp = 2, ratio = 3, k = 5, ntree = 10, mtry = 6,  seed = 1, fold.partition = folds.subset, ncores=4);
+	// setup the hyperSMURF classifier
+	clsHyperSMURF = new HyperSMURF();
+	clsHyperSMURF.setNumIterations(5);
+	clsHyperSMURF.setNumTrees(10);
+	clsHyperSMURF.setDistributionSpread(0);
+	clsHyperSMURF.setPercentage(100.0);
+	clsHyperSMURF.setSeed(SEED);
+	
+.. code-block:: text
 
-Of course the training and  CV functions allow to set also the parameters of the RF ensembles, that constitute the base learners of the hyperSMURF hyper-ensemble, such as the number of decision trees to be used for each RF (parameter `ntree`) or the number of features to be randomly selected from the set of available input features at each step of the inductive learning of the decision tree (parameter `mtry`). The full description of all the parameters and the output of each function is available in the PDF and HTML documentation included in the hyperSMURF R package.
+	=== 10-fold Cross-validation ===
+	Correctly Classified Instances       39987               99.1348 %
+	Incorrectly Classified Instances       349                0.8652 %
+	Kappa statistic                          0.6795
+	Mean absolute error                      0.0249
+	Root mean squared error                  0.0851
+	Relative absolute error                124.7001 %
+	Root relative squared error             85.3023 %
+	Total Number of Instances            40336     
+
+
+	=== Details ===
+	                 TP Rate  FP Rate  Precision  Recall   F-Measure  MCC      ROC Area  PRC Area  Class
+	                 0.992    0.071    0.999      0.992    0.996      0.705    0.991     1.000     0
+	                 0.929    0.008    0.541      0.929    0.684      0.705    0.991     0.900     1
+	Weighted Avg.    0.991    0.071    0.995      0.991    0.992      0.705    0.991     0.999
+	
+
+Again increasing the imbalance with `Mendelian.1_1000.arff.gz`:
+
+.. code-block:: java
+
+	// setup the hyperSMURF classifier
+	clsHyperSMURF = new HyperSMURF();
+	clsHyperSMURF.setNumIterations(10);
+	clsHyperSMURF.setNumTrees(10);
+	clsHyperSMURF.setDistributionSpread(3);
+	clsHyperSMURF.setPercentage(200.0);
+	clsHyperSMURF.setSeed(SEED);
+	
+.. code-block:: text
+
+	=== 10-fold Cross-validation ===
+	Correctly Classified Instances      392436               99.2597 %
+	Incorrectly Classified Instances      2927                0.7403 %
+	Kappa statistic                          0.2021
+	Mean absolute error                      0.0233
+	Root mean squared error                  0.0805
+	Relative absolute error               1135.2254 %
+	Root relative squared error            251.4735 %
+	Total Number of Instances           395363     
+
+
+	=== Details ===
+	                 TP Rate  FP Rate  Precision  Recall   F-Measure  MCC      ROC Area  PRC Area  Class
+	                 0.993    0.079    1.000      0.993    0.996      0.323    0.989     1.000     0
+	                 0.921    0.007    0.114      0.921    0.204      0.323    0.989     0.773     1
+	Weighted Avg.    0.993    0.079    0.999      0.993    0.995      0.323    0.989     1.000
+
+As we can see, we have a certain decrement of the performances when the imbalance increases. Indeed when we have perfectly balanced data the AUPRC is very close to 1, while by increasing the imbalance we have a progressive decrement of the AUPRC to 0.950, 0.900, till to 0.773 when we have a :math:`1:1000` imbalance ratio. Nevertheless this decline in  performance is relatively small compared to other machine-learning methods.
+
+
+We can perform the same task using parallel computation. For instance, by using 4 cores with an Intel i7-2670QM CPU, 2.20GHz, we perform a full 10-fold cytogenic band-aware cross-validation using 406 genetic variants known to be associated with Mendelian diseases and 400000 background variants in less than 5 minutes. The best performance boost from the implementation is if we do the training of the partitioning in parallel. So we can set the number of execution slots to 4 using :java:`clsHyperSMURF.setNumExecutionSlots(4)`;
+
+Of course the training and cross-validation functions allow to set also the parameters of the Random Forest ensembles, that constitute the base learners of the hyperSMURF hyper-ensemble, such as the number of decision trees to be used for each Random Forest (`setNumTrees(int num)`) or the number of features to be randomly selected from the set of available input features at each step of the inductive learning of the decision tree (`setNumFeatures(int num)`). The full description of the hyperSMURF class can be found in the hyperSMURF java API `https://javadoc.io/doc/de.charite.compbio/hyperSMURF/ <https://javadoc.io/doc/de.charite.compbio/hyperSMURF>`_.
+
 
 
 .. rubric:: References
