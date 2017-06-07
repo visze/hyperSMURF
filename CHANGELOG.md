@@ -6,6 +6,7 @@
 
 * Documentation release
 * move java api to javadoc.io
+* Upgrading Weka from 3.9. to 3.9.1
 
 ### manual
 
