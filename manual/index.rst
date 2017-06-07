@@ -51,6 +51,7 @@ hyperSMURF
     :maxdepth: 1
     :hidden:
 
+    citing
     contributing
     authors
     history
