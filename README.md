@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.org/charite/hyperSMURF.svg?branch=master)](https://travis-ci.org/charite/hyperSMURF)
-[![Documentation](https://readthedocs.org/projects/jannovar/badge/?version=master)](https://hyperSMURF.readthedocs.org)
+[![Documentation Status](https://readthedocs.org/projects/hypersmurf/badge/?version=master)](https://hypersmurf.readthedocs.io/en/master/?badge=master)
 [![API Docs](https://img.shields.io/badge/api-v0.3-blue.svg?style=flat)](https://javadoc.io/doc/de.charite.compbio/hyperSMURF/)
 [![license](https://img.shields.io/badge/licence-GNU%20GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0.txt)
 
