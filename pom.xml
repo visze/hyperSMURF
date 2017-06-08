@@ -79,12 +79,8 @@
 
 	<!-- distribution to upload to sonatype -->
 	<distributionManagement>
-		<repository>
-        <id>ossrh</id>
-        <url>https://oss.sonatype.org/content/repositories/releases</url>
-    </repository>
 		<snapshotRepository>
-			<id>ossrh-snapshot</id>
+			<id>ossrh</id>
 			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
 		</snapshotRepository>
 	</distributionManagement>
