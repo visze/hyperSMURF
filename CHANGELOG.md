@@ -2,11 +2,16 @@
 
 ## development
 
-## v0.2
+## v0.3
 
-* Publication release
+* Documentation release
+* move java api to javadoc.io
 
 ### manual
 
 * creating readthedocs manual
 * adding examples
+
+## v0.2
+
+* Publication release
