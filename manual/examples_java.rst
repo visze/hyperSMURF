@@ -14,7 +14,7 @@ In this section we will create a new Maven project, called hyperSMURF-tutorial, 
 Requirements
 =============
 
-First we have to build a maven project and include the hyperSMURF library into the `pom.xml` file. Therefore we generate a new folder (`hyperSMURF-tutorial`) and then we generate a new `pom.xml` file.
+First we have to build a maven project and include the hyperSMURF library into the `pom.xml` file. Therefore we generate a new folder (`hyperSMURF-tutorial`) with a new `pom.xml` file.
 
 .. code-block:: bash
 
@@ -48,14 +48,20 @@ Then we open the pom.xml file in an editor and put in the following lines:
 		</dependencies>
 	</project>
 
-Now it we can generate Java files under the the folder `src/main/java` and to generate a final runnable jar-file we simply use the command `mvn clean package` to generate a jar fine into the `target` folder. If you use Eclipse for developing a useful maven command might be `mvn eclipse:eclipse` to generate a project that can be imported into eclipse.
+Now we can start writing Java files under the the folder `src/main/java`. To build a final runnable jar-file we simply use the command `mvn clean package` to compile the jar file into the `target` folder. Then we can run the `hyperSMURF-tutorial-0.2-jar-with-dependencies.jar` jar in `target` folder by specifying our main class (here `SyntheticExample` from the next section):
+
+.. code-block:: bash
+
+	java -cp target/hyperSMURF-tutorial-0.2-jar-with-dependencies.jar de.charite.compbio.hypersmurf.SyntheticExample
+
+If you use Eclipse for developing a useful maven command might be `mvn eclipse:eclipse` to generate a project that can be imported into eclipse.
 
 .. _synthetic:
 
 Simple usage examples using synthetic data
 ==============================================
 
-In this section we will add a new class `SyntheticExample.java` to our maven project. This class has a main function to run it and two other main functions: (1) `generateSyntheticData` to generate synthetic imbalanced data and (2) `classify` to classify instances with a classifier using k-fold cross-validation.
+In this section we will add a new file `SyntheticExample` under the folder `src/main/java/de/charite/compbio/hypersmurf` to our maven project. In the file we will generate the `SyntheticExample` class which contains all functions to generate some imbalanced synthetic data, configure an run hyperSMURF and finally show some performance measurements of the training. The  class has a main function to run it and two other functions: (1) `generateSyntheticData` to generate synthetic imbalanced data and (2) `classify` to classify instances with a classifier using k-fold cross-validation.
 
 The outline of the Java class `SyntheticExample.java` looks like this:
 
@@ -110,7 +116,7 @@ The problem is, that this data is not imbalanced. We can check this writing a sh
 
 Now if we add :java:`int[] counts = countClasses(instances);` to our instance generation and print it using :java:`System.out.println("Before imbalancing: " + Arrays.toString(counts));` we will see that `c0` has 2599 and `c1` has 7401 instances.
 
-To imbalance the data we will write some own code. For example we want to use only 50 instances of `c0`. So we have to generate a new `Instances` object add all `c1` class instances and only 50 `c0` class instances.
+To imbalance the data we will write some own code. For example we want to use only 50 instances of `c0`. So we have to generate a new `Instances` object and assign all `c1` class instances and only 50 `c0` class instances to it.
 
 .. code-block:: java
 
@@ -146,7 +152,7 @@ Now we have to set up our classifier. We will use hyperSMURF with 10 partitions,
 	clsHyperSMURF.setSeed(SEED);
 	
 
-The next step will be the performance testing of hyperSMURF on the new generated imbalanced dataset. Therefore we will use a 5-fold cross-validation. To rerun this performance test using other classifiers we write everything into a new function :java:`classify(AbstractClassifier cls, Instances instances, int folds)`. The `classify` function will collect the predictions over all 5 folds in the `Evaluation` object which then can be used to print out the performance results. Here is the complete `classify` function:
+The next step will be the performance testing of hyperSMURF on the new generated imbalanced dataset. Therefore we will use a 5-fold cross-validation. To rerun this performance test using other classifiers we write everything into a new function :java:`classify(AbstractClassifier cls, Instances instances, int folds)`. The `classify` function will collect the predictions over all 5 folds in the `Evaluation` object which then can be used to print out the overall performance results. Here is the complete `classify` function:
 
 
 .. code-block:: java
@@ -195,7 +201,7 @@ The next step will be the performance testing of hyperSMURF on the new generated
 
 	}
 
-Finally we can use test hyperSMURF by running :java:`classify(clsHyperSMURF, imbalancedInstances, 5);`. The output of the performance should be like this:
+Finally we can test hyperSMURF by running :java:`classify(clsHyperSMURF, imbalancedInstances, 5);`. The output of the performance should be similar to the next text:
 
 .. code-block:: text
 
@@ -238,17 +244,17 @@ HyperSMURF was designed to predict rare genomic variants, when the available exa
 
 Here we show how to use hyperSMURF to detect these rare features using data sets obtained from the original large set of Mendelian data [Smedley2016]_.
 To provide usage examples that do not require more than 1 minute of computation time on a modern desktop computer, we considered data sets downsampled from the original Mendelian data.
-In particular we constructed Mendelian data sets with a progressive larger imbalance between Mendelian associated mutations and background genetic variants. We start with an artificially balanced data set, and then we consider progressively imbalanced data sets with ratio `positive:negative` varying from :math:`1:10`, to  :math:`1:100` and  :math:`1:1000`.
+In particular we constructed Mendelian data sets with a progressive larger imbalance between Mendelian associated mutations and background genetic variants. We start with an artificially balanced data set and then we consider progressively imbalanced data sets with ratio `positive:negative` varying from :math:`1:10`, :math:`1:100` and  :math:`1:1000`.
 These data sets are downloadable as compressed `.arff` files, easily usable by Weka, from `https://www.github.com/charite/hyperSMURF-tutorial/data <https://www.github.com/charite/hyperSMURF-tutorial/data>`_.
 
-The `Mendelian.balanced.arff.gz` file include 26 features, a column `class`showing the belonging class (1=positive, 0=negative) and a column `fold`. This is a numeric attribute with the number of the fold in which each example will be included according to the 10-fold cytogenetic band-aware CV procedure (0 to 9).
+The `Mendelian.balanced.arff.gz` file includes 26 features, a column `class`showing the belonging class (1=positive, 0=negative) and a column `fold`. This is a numeric attribute with the number of the fold in which each example will be included according to the 10-fold cytogenetic band-aware CV procedure (0 to 9).
 In total the file contains 406 positives and 400 negatives.
 
 Now we have to write the following code in our new Java file `MendelianExample.java`:
 
-* Loader of the Instances.
-* Cross-validation strategy that takes the the column `fold` into account when partitioning and removing the column `fold` for training.
-* Setting up our hyperSMURF classifier
+1. Loader of the Instances.
+2. Cross-validation strategy that takes the the column `fold` into account when partitioning and removing the column `fold` for training.
+3. Setting up our hyperSMURF classifier
 
 So this will be the blank `MendelianExample.java` class:
 
@@ -301,7 +307,7 @@ Now we arrived at the special cytogenetic band-aware cross-validation. The folds
  	}
  
 
-We will use the filter `SubsetbyExpression` to get the instances with the fold and we can simply use the `Instances` method `deteleAttributeAt(int index)` to remove the fold attribute. For `SubsetbyExpression` filter we write a regular expression like `Attribute = n` or `!(Attribute = n)` to get the `n`th fold (or all other folds). Attribute will be written by like `ATT`  with the index (count from 1) of the attribute. This we can get using :java:`int indexFold = instances.attribute("fold").index();` (started with 0) and we have to increment it by one for our filter method. So the content of our `getFold` method can look like:
+We will use the filter `SubsetbyExpression` to get the instances with the fold and we can simply use the `Instances` method `deteleAttributeAt(int index)` to remove the fold attribute. For `SubsetbyExpression` filter we write a regular expression like `attribute = n` or `!(attribute = n)` to get the `n`th fold, or all other folds except fold `n`. The identifier `attribute` will be written like `ATT`  with the index (count from 1) of the attribute. This we can get using :java:`int indexFold = instances.attribute("fold").index();` (started with 0) and we have to increment it by one for our filter method. So the content of our `getFold` method can look like:
 
 .. code-block:: java
 
@@ -389,7 +395,7 @@ If we run hyperSMURF with the settings above the command-line output will show a
 	
 Then we can perform the same computation using the progressively imbalanced data sets: `Mendelian.1_10.arff.gz`, `Mendelian.1_100.arff.gz`, and `Mendelian.1_1000.arff.gz`. Of course every time we have to adapt the settings of hyperSMURF.
 
-Using `Mendelian.1_10.arff.gz` hyperSUMRF and the output can look like:
+Using `Mendelian.1_10.arff.gz`, hyperSUMRF and the output can look like:
 
 .. code-block:: java
 
