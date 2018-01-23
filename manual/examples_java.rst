@@ -7,7 +7,7 @@
 Examples using the Java package
 ================================
 
-In this section we will create a new Maven project, called hyperSMURF-tutorial, and using hyperSMURF together with Weka to train some tasks. Therefore we first have to set up an Maven project which will handle all libraries for us. Then we will start with a synthetic example. Afterwards we are using real genetic data for training. All files of this tutorial are available `here <https://www.github.com/charite/hyperSMURF-tutorial>`_
+In this section we will create a new Maven project, called hyperSMURF-tutorial, and use hyperSMURF together with Weka to train some tasks. Therefore we first have to set up a Maven project which will handle all libraries for us. Then we will start with a synthetic example. Afterwards we use real genetic data for training. All files of this tutorial are available `here <https://www.github.com/charite/hyperSMURF-tutorial>`_
 
 .. _requirements:
 
@@ -32,7 +32,7 @@ Then we open the `pom.xml` file in an editor and put in the following lines:
 		<groupId>de.charite.compbio.hypersmurf</groupId>
 		<artifactId>hyperSMURF-tutorial</artifactId>
 		<packaging>jar</packaging>
-		<version>0.2</version>
+		<version>0.3</version>
 		<name>hyperSMURF-tutorial</name>
 		<properties>
 			<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -46,7 +46,7 @@ Then we open the `pom.xml` file in an editor and put in the following lines:
 			<dependency>
 				<groupId>de.charite.compbio</groupId>
 				<artifactId>hyperSMURF</artifactId>
-				<version>0.2</version>
+				<version>0.3</version>
 			</dependency>
 		</dependencies>
 		<build>
@@ -72,20 +72,20 @@ Then we open the `pom.xml` file in an editor and put in the following lines:
 	</project>
 
 
-Now it we can generate Java files under the the folder `src/main/java` and to generate a final runnable jar-file we simply use the command `mvn clean package` to generate a jar fine into the `target` folder. Then we can run the `hyperSMURF-tutorial-0.2-jar-with-dependencies.jar` jar in `target` folder by specifying our main class (here SyntheticExample from the next section):
+Now we can start writing Java files under the the folder `src/main/java`. To build a final runnable jar-file we simply use the command `mvn clean package` to compile the jar file into the `target` folder. Then we can run the `hyperSMURF-tutorial-0.3-jar-with-dependencies.jar` jar in `target` folder by specifying our main class (here SyntheticExample from the next section):
 
 .. code-block:: bash
 
-	java -cp target/hyperSMURF-tutorial-0.2-jar-with-dependencies.jar de.charite.compbio.hypersmurf.SyntheticExample
+	java -cp target/hyperSMURF-tutorial-0.3-jar-with-dependencies.jar de.charite.compbio.hypersmurf.SyntheticExample
 
-If you use Eclipse for developing a useful maven command might be `mvn eclipse:eclipse` to generate a project that can be imported into eclipse.
+If you use Eclipse for developing a useful maven command to generate a project that can be imported into eclipse is `mvn eclipse:eclipse`.
 
 .. _synthetic:
 
 Simple usage examples using synthetic data
 ==============================================
 
-In this section we will add a new class `SyntheticExample.java` under the folder `src/main/java/de/charite/compbio/hypersmurf` to our maven project. This class has a main function to run it and two other main functions: (1) `generateSyntheticData` to generate synthetic imbalanced data and (2) `classify` to classify instances with a classifier using k-fold cross-validation.
+In this section we will add a new class `SyntheticExample.java` under the folder `src/main/java/de/charite/compbio/hypersmurf` to our maven project. In the file we will generate the `SyntheticExample` class which contains all functions to generate imbalanced synthetic data, configure and run hyperSMURF and finally show some performance measurements of the training. The class has a main function to run it and two other main functions: (1) `generateSyntheticData` to generate synthetic imbalanced data and (2) `classify` to classify instances with a classifier using k-fold cross-validation.
 
 The outline of the Java class `SyntheticExample.java` looks like this:
 
@@ -105,7 +105,7 @@ The outline of the Java class `SyntheticExample.java` looks like this:
 		}
 	}
 
-So the class only defines a seed to make predictions consistent. Then we use the RDG1 data generator from Weka to generate synthetic data. For example we will generate 10000 instances, each with 20 numeric attributes and set the index to the last attribute which contains class `c0` and `c1` by default. Then we randomize the data using our predefined seed:
+So the class only defines a seed for the random number generator to make predictions consistent. Then we use the RDG1 data generator from Weka to generate synthetic data. For example we will generate 10000 instances, each with 20 numeric attributes, and set the index to the last attribute which contains class `c0` and `c1` by default. Then we randomize the data using our predefined seed:
 
 .. code-block:: java
 
@@ -126,7 +126,7 @@ So the class only defines a seed to make predictions consistent. Then we use the
 	instances.randomize(random);
 
 
-The problem is, that this data is not imbalanced. We can check this writing a short helper function.
+The problem is that this data is not imbalanced. We can check this by writing a short helper function.
 
 .. code-block:: java
 
@@ -142,7 +142,7 @@ The problem is, that this data is not imbalanced. We can check this writing a sh
 
 Now if we add :java:`int[] counts = countClasses(instances);` to our instance generation and print it using :java:`System.out.println("Before imbalancing: " + Arrays.toString(counts));` we will see that `c0` has 2599 and `c1` has 7401 instances.
 
-To imbalance the data we will write some own code. For example we want to use only 50 instances of `c0`. So we have to generate a new `Instances` object and assign all `c1` class instances and only 50 `c0` class instances to it.
+To imbalance the data we will write some code. For example we want to use only 50 instances of `c0`. So we have to generate a new `Instances` object and assign all `c1` class instances and only 50 `c0` class instances to it.
 
 .. code-block:: java
 
@@ -165,7 +165,7 @@ To imbalance the data we will write some own code. For example we want to use on
 
 The last line prints out the new imbalance. Now `c0` has only 50 instances.
 
-Now we have to set up our classifier. We will use hyperSMURF with 10 partitions, oversampling factor of 2 (200%), no undersampling and each forest should have a size on 10.
+Now we have to set up our classifier. We will use hyperSMURF with 10 partitions, an oversampling factor of 2 (200%), no undersampling, and each forest should have a size on 10.
 
 .. code-block:: java
 
@@ -178,7 +178,7 @@ Now we have to set up our classifier. We will use hyperSMURF with 10 partitions,
 	clsHyperSMURF.setSeed(SEED);
 
 
-The next step will be the performance testing of hyperSMURF on the new generated imbalanced dataset. Therefore we will use a 5-fold cross-validation. To rerun this performance test using other classifiers we write everything into a new function :java:`classify(AbstractClassifier cls, Instances instances, int folds)`. The `classify` function will collect the predictions over all 5 folds in the `Evaluation` object which then can be used to print out the performance results. Here is the complete `classify` function:
+The next step will be the performance testing of hyperSMURF on the newly generated imbalanced dataset. Therefore we will use a 5-fold cross-validation. To rerun this performance test using other classifiers we write everything into a new function :java:`classify(AbstractClassifier cls, Instances instances, int folds)`. The `classify` function will collect the predictions over all 5 folds in the `Evaluation` object which then can be used to print out the performance results. Here is the complete `classify` function:
 
 
 .. code-block:: java
@@ -266,14 +266,14 @@ Now we see that the RandomForest is only able to get an AUROC of 0.706 and an AU
 Usage examples with genetic data
 ===================================
 
-HyperSMURF was designed to predict rare genomic variants, when the available examples of such variants are substantially less than `background` examples. This is a typical situation with genetic variants. For instance, we have only a small set of available variants known to be associated with Mendelian diseases in non-coding regions (positive examples) against the sea of background variants, i.e. a ratio of about :math:`1:36,000` between positive and negative examples [Smedley2016]_.
+HyperSMURF was designed to predict rare genomic variants when the available examples of such variants are substantially less than `background` examples. This is a typical situation with genetic variants. For instance, we have only a small set of available variants known to be associated with Mendelian diseases in non-coding regions (positive examples) against the sea of background variants, i.e. a ratio of about :math:`1:36,000` between positive and negative examples [Smedley2016]_.
 
-Here we show how to use hyperSMURF to detect these rare features using data sets obtained from the original large set of Mendelian data [Smedley2016]_.
-To provide usage examples that do not require more than 1 minute of computation time on a modern desktop computer, we considered data sets downsampled from the original Mendelian data.
-In particular we constructed Mendelian data sets with a progressive larger imbalance between Mendelian associated mutations and background genetic variants. We start with an artificially balanced data set and then we consider progressively imbalanced data sets with ratio `positive:negative` varying from :math:`1:10`, :math:`1:100` and  :math:`1:1000`.
-These data sets are downloadable as compressed `.arff` files, easily usable by Weka, from `https://www.github.com/charite/hyperSMURF-tutorial/data <https://www.github.com/charite/hyperSMURF-tutorial/data>`_.
+Here we show how to use hyperSMURF to detect these rare features using datasets obtained from the original large set of Mendelian data [Smedley2016]_.
+To provide usage examples that do not require more than 1 minute of computation time on a modern desktop computer, we considered datasets downsampled from the original Mendelian data.
+In particular we constructed Mendelian datasets with a progressively larger imbalance between Mendelian associated mutations and background genetic variants. We start with an artificially balanced data set and then we consider progressively imbalanced datasets with ratio `positive:negative` varying from :math:`1:10`, :math:`1:100` and  :math:`1:1000`.
+These datasets are downloadable as compressed `.arff` files, easily usable by Weka, from `https://www.github.com/charite/hyperSMURF-tutorial/data <https://www.github.com/charite/hyperSMURF-tutorial/data>`_.
 
-The `Mendelian.balanced.arff.gz` file include 26 features, a column `class` howing the belonging class (1=positive, 0=negative) and a column `fold`. This is a numeric attribute with the number of the fold in which each example will be included according to the 10-fold cytogenetic band-aware CV procedure (0 to 9).
+The `Mendelian.balanced.arff.gz` file includes 26 features, a column `class` showing the belonging class (1=positive, 0=negative), and a column `fold`. This is a numeric attribute with the number of the fold in which each example will be included according to the 10-fold cytogenetic band-aware CV procedure (0 to 9).
 In total the file contains 406 positives and 400 negatives.
 
 Now we have to write the following code in our new Java file `MendelianExample.java` in folder `src/main/java/de/charite/compbio/hypersmurf`:
@@ -304,7 +304,7 @@ So this will be the blank `MendelianExample.java` class:
 	}
 
 
-To read the data we simply can use the `ArffLoader` from Weka. We will use the first argument of the command-line arguments as our input file.
+To read the data we can simply use the `ArffLoader` from Weka. We will use the first argument of the command-line arguments as our input file.
 
 .. code-block:: java
 
@@ -326,7 +326,7 @@ Then we have to set the class attribute. This is the last attribute of our insta
 	clsHyperSMURF.setSeed(SEED);
 
 
-Now we arrived at the special cytogenetic band-aware cross-validation. The folds are predefined as attribute `fold` in the instances object. So we have to select the instances on that fold but have to remove the fold attribute before training or testing a classifier. So we will write a small helper method that gives us a given fold for testing or the inverse for training. The blank method can be written like this:
+Now we arrived at the special cytogenetic band-aware cross-validation. The folds are predefined as attribute `fold` in the instances object. We have to select the instances on that fold but have to remove the fold attribute before training or testing a classifier. So we will write a small helper method that gives us a given fold for testing or the inverse for training. The blank method can be written like this:
 
  .. code-block: java
 
@@ -335,7 +335,7 @@ Now we arrived at the special cytogenetic band-aware cross-validation. The folds
  	}
 
 
-We will use the filter `SubsetbyExpression` to get the instances with the fold and we can simply use the `Instances` method `deteleAttributeAt(int index)` to remove the fold attribute. For `SubsetbyExpression` filter we write a regular expression like `Attribute = n` or `!(Attribute = n)` to get the `n`th fold (or all other folds). Attribute will be written by like `ATT`  with the index (one based) of the attribute. This we can get using :java:`int indexFold = instances.attribute("fold").index();` (zero based) and we have to increment it by one for our filter method. So the content of our `getFold` method can look like:
+We will use the filter `SubsetbyExpression` to get the instances with the fold and we can simply use the `Instances` method `deteleAttributeAt(int index)` to remove the fold attribute. For `SubsetbyExpression` filter we write a regular expression like `attribute = n` or `!(attribute = n)` to get the `n`th fold, or all other folds except of `n`. The identified `attribute` will be written like `ATT` with the index (one based) of the attribute. We can get it using :java:`int indexFold = instances.attribute("fold").index();` (zero based) and we have to increment it by one for our filter method. So the content of our `getFold` method can look like:
 
 .. code-block:: java
 
@@ -354,7 +354,7 @@ We will use the filter `SubsetbyExpression` to get the instances with the fold a
 
 	return filtered;
 
-Now it is time for the cross-validation this is similar to the Synthetic Example but we will use the `getFold` method to make the train/test partitioning.
+Now it is time for the cross-validation. This is similar to the Synthetic Example, but we will use the `getFold` method to make the train/test partitioning.
 
 .. code-block:: java
 
@@ -399,7 +399,7 @@ Now it is time for the cross-validation this is similar to the Synthetic Example
 	System.out.println();
 	System.out.println(eval.toClassDetailsString("=== Details ==="));
 
-If we run hyperSMURF with the settings above the command-line output will show an AUPRC 0.989 of and an AUROC of 0.989 of our class `1` which are the Mendelian regulatory mutations. This is the complete output:
+If we run hyperSMURF with the settings above the command-line output will show an AUPRC of 0.989 and an AUROC of 0.989 of our class `1` which are the Mendelian regulatory mutations. This is the complete output:
 
 .. code-block:: text
 
@@ -421,9 +421,9 @@ If we run hyperSMURF with the settings above the command-line output will show a
 	Weighted Avg.    0.955    0.044    0.957      0.955    0.955      0.912    0.989     0.986
 
 
-Then we can perform the same computation using the progressively imbalanced data sets: `Mendelian.1_10.arff.gz`, `Mendelian.1_100.arff.gz`, and `Mendelian.1_1000.arff.gz`. Of course every time we have to adapt the settings of hyperSMURF.
+Then we can perform the same computation using the progressively imbalanced datasets: `Mendelian.1_10.arff.gz`, `Mendelian.1_100.arff.gz`, and `Mendelian.1_1000.arff.gz`. Of course every time we have to adapt the settings of hyperSMURF.
 
-Using `Mendelian.1_10.arff.gz`, hyperSUMRF and the output can look like:
+Using `Mendelian.1_10.arff.gz` together with hyperSUMRF the output can look like this:
 
 .. code-block:: java
 
@@ -518,12 +518,12 @@ Again increasing the imbalance with `Mendelian.1_1000.arff.gz`:
 	                 0.921    0.007    0.114      0.921    0.204      0.323    0.989     0.773     1
 	Weighted Avg.    0.993    0.079    0.999      0.993    0.995      0.323    0.989     1.000
 
-As we can see, we have a certain decrement of the performances when the imbalance increases. Indeed when we have perfectly balanced data the AUPRC is very close to 1, while by increasing the imbalance we have a progressive decrement of the AUPRC to 0.950, 0.900, till to 0.773 when we have a :math:`1:1000` imbalance ratio. Nevertheless this decline in  performance is relatively small compared to other machine-learning methods.
+As we can see, we have a certain decrement of performance when the imbalance increases. Indeed when we have perfectly balanced data the AUPRC is very close to 1, while by increasing the imbalance we have a progressive decrement of the AUPRC to 0.950, 0.900, down to 0.773 when we have a :math:`1:1000` imbalance ratio. Nevertheless this decline in performance is relatively small compared to other machine-learning methods.
 
 
-We can perform the same task using parallel computation. For instance, by using 4 cores with an Intel i7-2670QM CPU, 2.20GHz, we perform a full 10-fold cytogenic band-aware cross-validation using 406 genetic variants known to be associated with Mendelian diseases and 400000 background variants in less than 5 minutes. The best performance boost from the implementation is if we do the training of the partitioning in parallel. So we can set the number of execution slots to 4 using :java:`clsHyperSMURF.setNumExecutionSlots(4);`.
+We can perform the same task using parallel computation. For instance, by using 4 cores with an Intel i7-2670QM CPU, 2.20GHz, we perform a full 10-fold cytogenic band-aware cross-validation using 406 genetic variants known to be associated with Mendelian diseases and 400000 background variants in less than 5 minutes. We get the best performance boost from this implementation if we do the training of the partitioning in parallel. So we can set the number of execution slots to 4 using :java:`clsHyperSMURF.setNumExecutionSlots(4);`.
 
-Of course the training and cross-validation functions allow to set also the parameters of the Random Forest ensembles, that constitute the base learners of the hyperSMURF hyper-ensemble, such as the number of decision trees to be used for each Random Forest (`setNumTrees(int num)`) or the number of features to be randomly selected from the set of available input features at each step of the inductive learning of the decision tree (`setNumFeatures(int num)`). The full description of the hyperSMURF class can be found in the `HyperSMURF` Java API `https://javadoc.io/doc/de.charite.compbio/hyperSMURF/ <https://javadoc.io/doc/de.charite.compbio/hyperSMURF>`_.
+Of course the training and cross-validation functions allow also to set the parameters of the Random Forest ensembles, that constitute the base learners of the hyperSMURF hyper-ensemble, such as the number of decision trees to be used for each Random Forest (`setNumTrees(int num)`) or the number of features to be randomly selected from the set of available input features at each step of the inductive learning of the decision tree (`setNumFeatures(int num)`). The full description of the hyperSMURF class can be found in the `HyperSMURF` Java API `https://javadoc.io/doc/de.charite.compbio/hyperSMURF/ <https://javadoc.io/doc/de.charite.compbio/hyperSMURF>`_.
 
 
 
