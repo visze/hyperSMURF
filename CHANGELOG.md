@@ -2,6 +2,8 @@
 
 ## development
 
+* Upgrading Weka to 3.9.2
+
 ## v0.3
 
 * Documentation release
